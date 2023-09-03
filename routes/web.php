@@ -1,0 +1,86 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
+Route::get('/create', function () {
+    return Inertia::render('CreateQuiz');
+});
+
+Route::get('/play', function () {
+    return Inertia::render('EnterPin');
+});
+
+Route::get('/test', function () {
+    return Inertia::render('Welcome_copy');
+});
+
+Route::get('/search', function () {
+    return Inertia::render('Search');
+});
+
+Route::get('/detail', function () {
+    return Inertia::render('QuizDetail');
+});
+
+Route::get('/room', function () {
+    return Inertia::render('WaitingRoom');
+});
+
+Route::get('/quiz-on-screen', function () {
+    return Inertia::render('QuizOnScreen');
+});
+
+Route::get('/result', function () {
+    return Inertia::render('FinalResult');
+});
+
+Route::prefix('user')->group(function () {
+    Route::get('', function () {
+        return Inertia::render('UserHome');
+    });
+    Route::get('/library', function () {
+        return Inertia::render('Library');
+    });
+    Route::get('/reports', function () {
+        return Inertia::render('Reports');
+    });
+    Route::get('/setting', function () {
+        return Inertia::render('Setting');
+    });
+    Route::get('/reports/{id}', function () {
+        return Inertia::render('QuizReport');
+    });
+});
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__ . '/auth.php';
