@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, Head } from "@inertiajs/react";
 
 const enter_pin = () => {
     return (
@@ -30,9 +31,12 @@ const enter_pin = () => {
                         </form>
                     </div>
                 </div>
-                <p className="h-min row-span-1 font-semibold text-slate-200 text-center p-3">
+                <Link
+                    href="/"
+                    className="h-min row-span-1 font-semibold text-slate-200 text-center p-3"
+                >
                     Back To Home
-                </p>
+                </Link>
             </div>
         </>
     );

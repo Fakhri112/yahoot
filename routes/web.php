@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,25 +17,32 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
+        'title' => 'Yahoot',
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
     ]);
 });
 
 Route::get('/create', function () {
-    return Inertia::render('CreateQuiz');
+    return Inertia::render('CreateQuiz', [
+        'title' => 'Create Quiz'
+    ]);
 });
 
 Route::get('/play', function () {
-    return Inertia::render('EnterPin');
+    return Inertia::render('EnterPin', [
+        'title' => 'Play Yahoot',
+    ]);
 });
 
 Route::get('/test', function () {
     return Inertia::render('Welcome_copy');
 });
 
-Route::get('/search', function () {
-    return Inertia::render('Search');
+Route::get('/browse', function () {
+    return Inertia::render('Search', [
+        'title' => 'Browse Games',
+    ]);
 });
 
 Route::get('/detail', function () {
@@ -68,8 +74,13 @@ Route::prefix('user')->group(function () {
     Route::get('/setting', function () {
         return Inertia::render('Setting');
     });
-    Route::get('/reports/{id}', function () {
-        return Inertia::render('QuizReport');
+    Route::prefix('/reports/{id}')->group(function () {
+        Route::get('', function () {
+            return Inertia::render('QuizReport');
+        });
+        Route::get('players', function () {
+            return Inertia::render('QuizReportPlayers');
+        });
     });
 });
 

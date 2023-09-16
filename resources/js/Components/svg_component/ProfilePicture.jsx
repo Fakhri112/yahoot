@@ -3,6 +3,7 @@ import React from "react";
 const ProfilePicture = (props) => {
     return (
         <svg
+            tabIndex={props.tabIndex}
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

@@ -21,10 +21,14 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "@tanstack/react-table": "^8.9.3",
+        "@tanstack/react-table": "^8.9.9",
         "@types/react": "^18.2.20",
         "@types/react-dom": "^18.2.7",
+        "react-infinite-scroll-component": "^6.1.0",
+        "react-modal": "^3.16.1",
         "react-select": "^5.7.4",
-        "tailwindcss-animated": "^1.0.1"
+        "sweetalert2": "^11.7.28",
+        "tailwindcss-animated": "^1.0.1",
+        "typescript": "^5.2.2"
     }
 }
