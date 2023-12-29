@@ -1,6 +1,9 @@
 import React from "react";
-import ProfilePicture from "@/Components/svg_component/ProfilePicture";
+import ProfilePicture from "@/Components/svg/ProfilePicture";
 import { Link } from "@inertiajs/react";
+import { Menu, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import NavDropdown from "./NavDropdown";
 
 const NavBar = () => {
     return (
@@ -26,25 +29,7 @@ const NavBar = () => {
                 >
                     Browse
                 </Link>
-                <div>
-                    <div className="dropdown dropdown-bottom dropdown-end">
-                        <ProfilePicture
-                            tabIndex={0}
-                            className="cursor-pointer h-10"
-                        />
-                        <ul
-                            tabIndex={0}
-                            className="border dropdown-content z-[1] mt-5 menu p-2 shadow bg-base-100 w-52"
-                        >
-                            <li>
-                                <a>My Profile</a>
-                            </li>
-                            <li className="text-red-800 font-semibold">
-                                <a>Sign Out</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <NavDropdown />
             </div>
         </nav>
     );

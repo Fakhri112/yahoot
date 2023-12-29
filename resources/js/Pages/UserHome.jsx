@@ -1,5 +1,5 @@
 import React from "react";
-import ProfilePicture from "../Components/svg_component/ProfilePicture";
+import ProfilePicture from "../Components/svg/ProfilePicture";
 import ProfileSidebar from "@/Components/ProfileSidebar";
 import NavBar from "@/Components/NavBar";
 import CardQuiz from "@/Components/CardQuiz";

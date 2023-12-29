@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import ProfilePicture from "./svg_component/ProfilePicture";
+import ProfilePicture from "./svg/ProfilePicture";
 
 const CardQuiz = () => {
     return (

@@ -7,9 +7,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -29,15 +31,38 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
 
+        $request->validate([
+            'name' => 'required|string|max:255|alpha_dash',
+            'email' => 'required|email',
+        ]);
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
-        $request->user()->save();
+        if ($request->hasFile('profile_pic')) {
+            $request->validate([
+                'profile_pic' => 'mimes:jpg,png,jpeg|max:5048'
+            ]);
+            $file = $request->file('profile_pic');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path() . '/profile_pic', $filename);
+            $profile_pic_db_name = '/profile_pic/' . $filename;
+        } else {
+            $profile_pic_db_name = '';
+            $query = DB::select("SELECT profile_pic from users WHERE email = :userEmail", ['userEmail' => $request->user()->email]);
+            if (file_exists(public_path() . $query[0]->profile_pic)) {
+                unlink(public_path() . $query[0]->profile_pic);
+            }
+        }
 
-        return Redirect::route('profile.edit');
+        $request->user()->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'profile_pic' => $profile_pic_db_name
+        ]);
+
+        return Redirect::to('user/setting');
     }
 
     /**

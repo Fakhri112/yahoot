@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\CreateQuizController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Termwind\Components\Raw;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,10 +27,18 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/create', function () {
-    return Inertia::render('CreateQuiz', [
-        'title' => 'Create Quiz'
-    ]);
+Route::get('/result', function () {
+    return Inertia::render('FinalResult');
+});
+
+
+Route::get('/quiz-on-screen', function () {
+    return Inertia::render('QuizOnScreen');
+});
+
+
+Route::get('/room', function () {
+    return Inertia::render('WaitingRoom');
 });
 
 Route::get('/play', function () {
@@ -39,50 +51,47 @@ Route::get('/test', function () {
     return Inertia::render('Welcome_copy');
 });
 
-Route::get('/browse', function () {
-    return Inertia::render('Search', [
-        'title' => 'Browse Games',
-    ]);
-});
-
-Route::get('/detail', function () {
-    return Inertia::render('QuizDetail');
-});
-
-Route::get('/room', function () {
-    return Inertia::render('WaitingRoom');
-});
-
-Route::get('/quiz-on-screen', function () {
-    return Inertia::render('QuizOnScreen');
-});
-
-Route::get('/result', function () {
-    return Inertia::render('FinalResult');
-});
-
-Route::prefix('user')->group(function () {
-    Route::get('', function () {
-        return Inertia::render('UserHome');
+Route::middleware('auth')->group(function () {
+    Route::get('/browse', function () {
+        return Inertia::render('Search', [
+            'title' => 'Browse Games',
+        ]);
     });
-    Route::get('/library', function () {
-        return Inertia::render('Library');
+
+    Route::get('/detail', function () {
+        return Inertia::render('QuizDetail');
     });
-    Route::get('/reports', function () {
-        return Inertia::render('Reports');
-    });
-    Route::get('/setting', function () {
-        return Inertia::render('Setting');
-    });
-    Route::prefix('/reports/{id}')->group(function () {
+
+
+
+    Route::get('/create',  [CreateQuizController::class, 'getFolders']);
+
+
+    Route::prefix('user')->group(function () {
         Route::get('', function () {
-            return Inertia::render('QuizReport');
+            return Inertia::render('UserHome');
         });
-        Route::get('players', function () {
-            return Inertia::render('QuizReportPlayers');
+        Route::get('/library', function () {
+            return Inertia::render('Library');
+        });
+        Route::get('/reports', function () {
+            return Inertia::render('Reports');
+        });
+        Route::get('/setting', function () {
+            return Inertia::render('Setting');
+        });
+        Route::prefix('/reports/{id}')->group(function () {
+            Route::get('', function () {
+                return Inertia::render('QuizReport');
+            });
+            Route::get('players', function () {
+                return Inertia::render('QuizReportPlayers');
+            });
         });
     });
 });
+
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -90,7 +99,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

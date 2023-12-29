@@ -4,7 +4,7 @@ import {
     PersonIcon,
     QuestionMark,
     Clock,
-} from "@/Components/svg_component/QuizReportIcon";
+} from "@/Components/svg/QuizReportIcon";
 import { Link } from "@inertiajs/react";
 import React from "react";
 

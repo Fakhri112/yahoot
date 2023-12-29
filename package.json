@@ -11,7 +11,6 @@
         "@vitejs/plugin-react": "^3.0.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.1.2",
-        "daisyui": "^3.5.1",
         "laravel-vite-plugin": "^0.7.2",
         "lodash": "^4.17.19",
         "postcss": "^8.4.18",
@@ -24,12 +23,15 @@
         "@tanstack/react-table": "^8.9.9",
         "@types/react": "^18.2.20",
         "@types/react-dom": "^18.2.7",
+        "rc-slider": "^10.4.0",
         "react-beautiful-dnd": "^13.1.1",
+        "react-easy-crop": "^5.0.2",
         "react-infinite-scroll-component": "^6.1.0",
         "react-modal": "^3.16.1",
         "react-select": "^5.7.4",
         "sweetalert2": "^11.7.28",
         "tailwindcss-animated": "^1.0.1",
-        "typescript": "^5.2.2"
+        "typescript": "^5.2.2",
+        "uuid": "^9.0.1"
     }
 }

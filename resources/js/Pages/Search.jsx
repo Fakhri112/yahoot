@@ -1,6 +1,6 @@
 import CardQuiz from "@/Components/CardQuiz";
 import NavBar from "@/Components/NavBar";
-import ProfilePicture from "@/Components/svg_component/ProfilePicture";
+import ProfilePicture from "@/Components/svg/ProfilePicture";
 
 const QuizReport = () => {
     return (

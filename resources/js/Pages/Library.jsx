@@ -1,8 +1,8 @@
 import React from "react";
 import ProfileSidebar from "@/Components/ProfileSidebar";
-import ProfilePicture from "@/Components/svg_component/ProfilePicture";
+import ProfilePicture from "@/Components/svg/ProfilePicture";
 import NavBar from "@/Components/NavBar";
-import Folder from "@/Components/svg_component/Folder";
+import { Folder } from "@/Components/svg/FileExplorer";
 import { Link } from "@inertiajs/react";
 
 const Reports = () => {

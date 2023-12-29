@@ -22,9 +22,5 @@ module.exports = {
         themes: ["light", "emerald"],
     },
 
-    plugins: [
-        require("tailwindcss-animated"),
-        require("@tailwindcss/forms"),
-        require("daisyui"),
-    ],
+    plugins: [require("tailwindcss-animated"), require("@tailwindcss/forms")],
 };

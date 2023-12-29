@@ -1,10 +1,5 @@
 import React from "react";
-import {
-    Triangle,
-    Rhombus,
-    Circle,
-    Square,
-} from "@/Components/svg_component/Shape";
+import { Triangle, Rhombus, Circle, Square } from "@/Components/svg/Shape";
 
 const QuizOnScreen = () => {
     return (

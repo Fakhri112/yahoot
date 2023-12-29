@@ -1,13 +1,9 @@
 import React from "react";
-import {
-    Rhombus,
-    Circle,
-    Square,
-    Triangle,
-} from "@/Components/svg_component/Shape";
-import ProfilePicture from "@/Components/svg_component/ProfilePicture";
+import { Rhombus, Circle, Square, Triangle } from "@/Components/svg/Shape";
+import ProfilePicture from "@/Components/svg/ProfilePicture";
 import NavBar from "@/Components/NavBar";
 import ProfileSidebar from "@/Components/ProfileSidebar";
+import { Disclosure } from "@headlessui/react";
 
 const Reports = () => {
     return (
@@ -16,10 +12,7 @@ const Reports = () => {
                 <NavBar />
                 <ProfileSidebar />
                 <main className="pb-20 md:pb-0 h-[calc(100vh-12%)] bg-slate-200 ms-0 md:ms-24 grid grid-cols-1 md:grid-cols-12 overflow-y-auto">
-                    <div
-                        data-theme="light"
-                        className="col-span-4 text-slate-900 border border-slate-300"
-                    >
+                    <div className="col-span-4 text-slate-900 border border-slate-100 bg-white">
                         <img src="/image.png" alt="" />
                         <div className="p-2">
                             <h1 className="font-bold text-xl">
@@ -44,9 +37,14 @@ const Reports = () => {
                     </div>
                     <div className="col-span-8 w-full h-full border-black text-slate-900 px-4 py-6">
                         <p className="font-semibold text-xl">Question (12)</p>
-                        <div className="collapse bg-base-200 rounded-none border">
-                            <input type="checkbox" className="w-full h-full" />
-                            <div className="collapse-title p-0 flex h-24 justify-between bg-white">
+                        <Disclosure
+                            as="div"
+                            className="bg-base-200 rounded-none border "
+                        >
+                            <Disclosure.Button
+                                as="div"
+                                className="p-0 flex h-24 justify-between bg-white cursor-pointer hover:bg-blue-200"
+                            >
                                 <div className="p-4 text-sm">
                                     <p>1. Quiz</p>
                                     <b>
@@ -54,14 +52,17 @@ const Reports = () => {
                                         the sentence?
                                     </b>
                                 </div>
-                                <div className="flex ">
+                                <div className="flex border ">
                                     <img src="/image.png" alt="" />
-                                    <p className="absolute text-white rounded opacity-75 right-0 bottom-0 text-sm bg-slate-500 px-1">
+                                    <p className="absolute text-slate-700 font-semibold rounded m-1 text-sm bg-slate-50 px-1">
                                         20 Sec
                                     </p>
                                 </div>
-                            </div>
-                            <div className="collapse-content flex flex-col gap-y-4 bg-white">
+                            </Disclosure.Button>
+                            <Disclosure.Panel
+                                as="div"
+                                className="collapse-content flex flex-col gap-y-4 bg-white px-3 pb-2"
+                            >
                                 <div className="flex justify-between items-center">
                                     <div className="flex gap-x-2 items-center">
                                         <Triangle className="bg-red-700 p-2 fill-white h-10 w-10 rounded" />
@@ -90,8 +91,8 @@ const Reports = () => {
                                     </div>
                                     &#10060;
                                 </div>
-                            </div>
-                        </div>
+                            </Disclosure.Panel>
+                        </Disclosure>
                     </div>
                 </main>
             </div>
