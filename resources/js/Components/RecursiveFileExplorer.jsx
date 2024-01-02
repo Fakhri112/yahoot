@@ -20,6 +20,7 @@ const RecursiveFileExplorer = ({ node, onAddFolder, directory }) => {
         setFolderConfig({
             ...folderConfig,
             folderOpenName: node.name,
+            folderId: node.id,
             folderDirectory: directory,
         });
     };

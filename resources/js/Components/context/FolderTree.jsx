@@ -7,20 +7,17 @@ const useFolderTreeContext = () => {
 };
 
 const FolderTreeProvider = ({ children }) => {
-    // Define the state or any data you want to provide
     const [folderConfig, updateFolderConfig] = useState({
         folderOpenName: "",
         folderDirectory: "",
         newFolderParent: null,
+        folderId: 0,
     });
 
     const setFolderConfig = (value) => {
         updateFolderConfig(value);
     };
 
-    // console.log(folderConfig);
-
-    // Use the Provider to make the context value available to its children
     return (
         <FolderContext.Provider value={{ folderConfig, setFolderConfig }}>
             {children}

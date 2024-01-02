@@ -9,7 +9,7 @@ import {
 } from "@/Components/context/CreateQuizContext";
 
 export const SaveTo = ({ setfolderData, setDirectory, setNewFolderList }) => {
-    const { modal, folderData } = useCreateQuizState();
+    const { modal, folderData, saveDirectory } = useCreateQuizState();
     const dispatch = useCreateQuizDispatch();
     const { folderConfig, setFolderConfig } = useFolderTreeContext();
 
@@ -60,7 +60,11 @@ export const SaveTo = ({ setfolderData, setDirectory, setNewFolderList }) => {
         if (folderConfig.folderOpenName == "") return;
         dispatch({
             type: "UPDATE_SAVE_DIRECTORY",
-            payload: folderConfig.folderDirectory,
+            payload: {
+                ...saveDirectory,
+                path: folderConfig.folderDirectory,
+                path_id: folderConfig.folderId,
+            },
         });
         handleToggleDirectory();
         setFolderConfig({

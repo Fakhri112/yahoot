@@ -64,8 +64,8 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/create',  [CreateQuizController::class, 'getFolders']);
-
+    Route::get('/create',  [CreateQuizController::class, 'getQuizData']);
+    Route::post('/create',  [CreateQuizController::class, 'submitCreateQuiz']);
 
     Route::prefix('user')->group(function () {
         Route::get('', function () {

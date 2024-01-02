@@ -146,8 +146,7 @@ export const ImagePicker = () => {
     };
 
     const handleSetCropImage = (state) => {
-        const QuestionCopy = questionData;
-
+        const QuestionCopy = JSON.parse(JSON.stringify(questionData));
         if (pixabaySetting.forThumbnail)
             dispatch({
                 type: "UPDATE_QUIZ_SETTING",
@@ -160,8 +159,8 @@ export const ImagePicker = () => {
         else
             for (let index = 0; index < QuestionCopy.length; index++) {
                 if (selectedQuestion === QuestionCopy[index].id) {
-                    (QuestionCopy[index].image = state.image_link),
-                        (QuestionCopy[index].image_link = state.image_file);
+                    (QuestionCopy[index].image_link = state.image_link),
+                        (QuestionCopy[index].image_file = state.image_file);
                 }
             }
         dispatch({ type: "UPDATE_QUESTION_DATA", payload: [...QuestionCopy] });

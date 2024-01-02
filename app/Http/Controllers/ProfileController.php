@@ -51,7 +51,7 @@ class ProfileController extends Controller
         } else {
             $profile_pic_db_name = '';
             $query = DB::select("SELECT profile_pic from users WHERE email = :userEmail", ['userEmail' => $request->user()->email]);
-            if (file_exists(public_path() . $query[0]->profile_pic)) {
+            if (file_exists(public_path() . $query[0]->profile_pic) && $query[0]->profile_pic) {
                 unlink(public_path() . $query[0]->profile_pic);
             }
         }

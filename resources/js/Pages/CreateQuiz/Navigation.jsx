@@ -2,12 +2,24 @@ import {
     useCreateQuizDispatch,
     useCreateQuizState,
 } from "@/Components/context/CreateQuizContext";
-import { Link } from "@inertiajs/react";
-import React from "react";
+import { Link, useForm } from "@inertiajs/react";
+import React, { useEffect } from "react";
 
 export const Navigation = () => {
     const dispatch = useCreateQuizDispatch();
-    const { modal } = useCreateQuizState();
+    const { modal, questionData, quizSetting, saveDirectory } =
+        useCreateQuizState();
+    const { data, setData, post } = useForm({});
+
+    const handleSave = (e) => {
+        e.preventDefault();
+    };
+
+    useEffect(() => {
+        let setting = JSON.parse(JSON.stringify(quizSetting));
+        setting.path_id = saveDirectory.path_id;
+        setData({ questionData, quizSettingData: setting });
+    }, [questionData, quizSetting]);
 
     const handleToggleSetting = () => {
         return dispatch({
@@ -45,7 +57,10 @@ export const Navigation = () => {
                     >
                         Exit
                     </Link>
-                    <button className="shadow-lg py-2 px-3 btn-primary ms-4">
+                    <button
+                        className="shadow-lg py-2 px-3 btn-primary ms-4"
+                        onClick={handleSave}
+                    >
                         Save
                     </button>
                 </div>

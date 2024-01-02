@@ -145,8 +145,9 @@ export const QuizSetting = () => {
                             className="w-full"
                             type="text"
                             id="save_to"
-                            value={saveDirectory}
+                            value={saveDirectory.path}
                             onChange={handleQuizSetting}
+                            disabled
                         />
                         <button
                             className="btn-primary p-3"

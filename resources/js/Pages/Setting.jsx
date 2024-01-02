@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProfileSidebar from "@/Components/ProfileSidebar";
 import NavBar from "@/Components/NavBar";
 import { useForm, usePage } from "@inertiajs/react";
 import "rc-slider/assets/index.css";
 import ImageCropper from "@/Components/ImageCropper";
 
-const CROPPER_SETTING = {
+const CROPPER_CONF = {
     selectedImage: "",
     cropModal: false,
-    croppedImage: data.profile_pic,
+    croppedImage: "",
     cropShape: "round",
     ratio: 1 / 1,
 };
@@ -20,7 +20,14 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
         email: user.email,
         profile_pic: user.profile_pic,
     });
-    const [CropperComponent, SetCropperComponent] = useState(CROPPER_SETTING);
+    const [CropperComponent, SetCropperComponent] = useState(CROPPER_CONF);
+
+    useEffect(() => {
+        SetCropperComponent({
+            ...CropperComponent,
+            croppedImage: data.profile_pic,
+        });
+    }, []);
 
     const submit = (e) => {
         e.preventDefault();
@@ -53,14 +60,14 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                 <ProfileSidebar />
                 <ImageCropper
                     {...CropperComponent}
-                    SetCroppedImage={(state) =>
+                    SetCroppedImage={(state) => {
                         SetCropperComponent({
                             ...CropperComponent,
                             croppedImage: state.image_link,
                             cropModal: !CropperComponent.cropModal,
-                        })
-                    }
-                    SetImageFile={(state) => setData("profile_pic", state)}
+                        });
+                        setData("profile_pic", state.image_file);
+                    }}
                 />
                 <main className="pb-24 md:ml-24 h-[calc(100vh)] bg-slate-50 p-2">
                     <div className=" h-full p-2 text-slate-800 overflow-auto ">
@@ -133,7 +140,6 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                                                 setData("name", e.target.value)
                                             }
                                             required
-                                            isFocused
                                             autoComplete="name"
                                             className="h-8 rounded border-slate-400"
                                             type="text"
@@ -204,7 +210,7 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="bg-white rounded drop-shadow-lg mb-4">
+                            <div className="bg-white rounded drop-shadow-lg mb-10">
                                 <div className="flex justify-between px-3 py-2">
                                     <p className="text-lg font-semibold">
                                         Delete Account

@@ -10,8 +10,7 @@ export const QuestionListPanel = () => {
     const { questionData, selectedQuestion } = useCreateQuizState();
 
     const handleAddQuestion = () => {
-        const new_quiz = JSON.parse(JSON.stringify(stateList.questionData));
-
+        const new_quiz = JSON.parse(JSON.stringify(stateList)).questionData;
         new_quiz[0].id = questionData.length + 1;
         new_quiz[0].question += " " + new_quiz[0].id;
         new_quiz[0].image = "";
@@ -62,7 +61,7 @@ export const QuestionListPanel = () => {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            className="md:mt-4 flex md:w-full gap-x-2"
+                                            className="md:mt-4 flex md:w-full gap-x-2 ml-1 md:ml-0"
                                             key={index}
                                             onClick={() => {
                                                 dispatch({

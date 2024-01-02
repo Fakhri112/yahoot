@@ -18,7 +18,7 @@ class CreateQuizController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function getFolders()
+    public function getQuizData()
     {
 
         $Folders = DB::table('folders')
@@ -35,13 +35,16 @@ class CreateQuizController extends Controller
         $file_result = count($quizzes) == 0 ? json_encode($formattedItems)
             : $this->assignFileToFolder($formattedItems, $quizzes);
 
-        //  echo json_encode($formattedItems);
-
         return Inertia::render('CreateQuiz/Index', [
             'userFolder' => $file_result,
             'pageTitle' => 'Create Quiz'
         ]);
     }
+
+    public function submitCreateQuizData()
+    {
+    }
+
     private function formatFolders($items, $parentId = null)
     {
         $result = [];

@@ -14,10 +14,10 @@ export const QuestionMainPanel = () => {
     );
 
     const delete_quiz_image = () => {
-        const QuestionCopy = questionData;
+        const QuestionCopy = JSON.parse(JSON.stringify(questionData));
         for (let index = 0; index < QuestionCopy.length; index++) {
             if (selectedQuestion === QuestionCopy[index].id) {
-                QuestionCopy[index].image = "";
+                QuestionCopy[index].image_link = "";
                 QuestionCopy[index].image_file = "";
             }
         }
@@ -42,7 +42,7 @@ export const QuestionMainPanel = () => {
     };
 
     const deleteQuestion = () => {
-        const QuestionCopy = questionData;
+        const QuestionCopy = JSON.parse(JSON.stringify(questionData));
         const deletedQuestion = QuestionCopy.filter(
             (value) => value.id !== filteredItems[0].id
         );
@@ -59,7 +59,7 @@ export const QuestionMainPanel = () => {
         });
     };
     const handleFormAnswer = (e) => {
-        const QuestionCopy = questionData;
+        const QuestionCopy = JSON.parse(JSON.stringify(questionData));
 
         for (let index = 0; index < QuestionCopy.length; index++) {
             if (selectedQuestion === QuestionCopy[index].id) {
@@ -75,7 +75,7 @@ export const QuestionMainPanel = () => {
         dispatch({ type: "UPDATE_QUESTION_DATA", payload: [...QuestionCopy] });
     };
     const handleQuestionDuration = (e) => {
-        const QuestionCopy = questionData;
+        const QuestionCopy = JSON.parse(JSON.stringify(questionData));
 
         for (let index = 0; index < QuestionCopy.length; index++) {
             if (selectedQuestion === QuestionCopy[index].id) {
@@ -171,7 +171,7 @@ md:col-span-10 md:row-[span_7_/_span_7] md:w-full md:h-full"
                             </select>
                         </div>
                         <div className="w-[52vh] h-[32vh] grid place-items-center bg-slate-400 drop-shadow-md rounded">
-                            {value.image.length !== 0 ? (
+                            {value.image_link.length !== 0 ? (
                                 <div>
                                     <button
                                         className="absolute p-3 bg-white hover:bg-red-500"
@@ -185,7 +185,10 @@ md:col-span-10 md:row-[span_7_/_span_7] md:w-full md:h-full"
                                             <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
                                         </svg>
                                     </button>
-                                    <img src={value.image} alt="Quiz Image" />
+                                    <img
+                                        src={value.image_link}
+                                        alt="Quiz Image"
+                                    />
                                 </div>
                             ) : (
                                 <button

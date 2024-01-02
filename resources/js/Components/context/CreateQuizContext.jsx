@@ -19,6 +19,13 @@ export const CreateQuizProvider = ({ children, folderData }) => {
             type: "INSERT_FOLDER_DATA",
             payload: folderData,
         });
+        dispatch({
+            type: "UPDATE_SAVE_DIRECTORY",
+            payload: {
+                ...state.saveDirectory,
+                path_id: folderData.id,
+            },
+        });
     }, []);
 
     return (
@@ -42,7 +49,7 @@ export const stateList = {
             id: 1,
             question: "New Question",
             duration: 0,
-            image: "",
+            image_link: "",
             image_file: "",
             answer: {
                 A: "",
@@ -79,7 +86,10 @@ export const stateList = {
         cropShape: "rect",
         ratio: 52 / 32,
     },
-    saveDirectory: "My Drive",
+    saveDirectory: {
+        path: "My Drive",
+        path_id: 0,
+    },
     selectedQuestion: 1,
     folderData: "",
 };
