@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('quiz_name');
             $table->string('visibility');
-            $table->string('description');
+            $table->string('quiz_description', 2048);
             $table->string('thumbnail');
             $table->string('total_players');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignUuid('user_id')->constrained();
             $table->foreignId('folder_id')->constrained();
             $table->timestamps();
         });

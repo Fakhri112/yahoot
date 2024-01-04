@@ -27,16 +27,8 @@ const ImageCropper = ({
                 0
             );
 
-            const file = await fetch(croppedImage)
-                .then((res) => res.blob())
-                .then(
-                    (blob) =>
-                        new File([blob], "uploadedFile.jpg", {
-                            type: "image/jpeg",
-                        })
-                );
-
-            SetCroppedImage({ image_file: file, image_link: croppedImage });
+            let base64image = croppedImage.toDataURL("image/jpeg");
+            SetCroppedImage({ image: base64image });
         } catch (e) {
             console.error(e);
         }

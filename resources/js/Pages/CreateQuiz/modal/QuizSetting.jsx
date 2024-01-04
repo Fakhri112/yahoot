@@ -109,7 +109,7 @@ export const QuizSetting = () => {
                         ) : (
                             <button
                                 className="btn border-none font-bold bg-blue-700 
-                text-slate-200 rounded hover:bg-blue-600 p-2"
+                text-slate-200 rounded hover:bg-blue-600 p-2 my-16"
                                 onClick={() => {
                                     handleModal().toggleImagePicker();
                                     dispatch({
@@ -131,7 +131,8 @@ export const QuizSetting = () => {
                         Description
                     </label>
                     <textarea
-                        className="w-full h-full"
+                        maxLength={300}
+                        className="w-full md:h-full h-40"
                         name="desc"
                         id="quiz_description"
                         value={quizSetting.quiz_description}

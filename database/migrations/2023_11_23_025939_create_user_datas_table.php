@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('player_counts');
             $table->integer('quiz_total');
             $table->integer('plays_count');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignUuid('user_id')->constrained();
             $table->timestamps();
         });
     }

@@ -152,15 +152,15 @@ export const ImagePicker = () => {
                 type: "UPDATE_QUIZ_SETTING",
                 payload: {
                     ...quizSetting,
-                    thumbnail: state.image_link,
-                    thumbnail_file: state.image_file,
+                    thumbnail: state.image,
+                    // thumbnail_file: state.image_file,
                 },
             });
         else
             for (let index = 0; index < QuestionCopy.length; index++) {
                 if (selectedQuestion === QuestionCopy[index].id) {
-                    (QuestionCopy[index].image_link = state.image_link),
-                        (QuestionCopy[index].image_file = state.image_file);
+                    QuestionCopy[index].image_file = state.image;
+                    // (QuestionCopy[index].image_file = state.image_file);
                 }
             }
         dispatch({ type: "UPDATE_QUESTION_DATA", payload: [...QuestionCopy] });

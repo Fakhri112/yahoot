@@ -28,6 +28,9 @@ export const CreateQuizProvider = ({ children, folderData }) => {
         });
     }, []);
 
+    console.log(state.questionData);
+    console.log(state.quizSetting);
+
     return (
         <CreateQuizState.Provider value={state}>
             <CreateQuizDispatch.Provider value={dispatch}>
@@ -47,25 +50,38 @@ export const stateList = {
     questionData: [
         {
             id: 1,
-            question: "New Question",
-            duration: 0,
-            image_link: "",
+            question: "Hello?",
+            duration: 20,
+
             image_file: "",
             answer: {
-                A: "",
-                B: "",
-                C: "",
-                D: "",
+                A: "Hello",
+                B: "World",
+                C: "I",
+                D: "Love You",
             },
-            correct_answer: "",
+            correct_answer: "A",
+        },
+        {
+            id: 2,
+            question: "Node.js is",
+            duration: 15,
+            image_file: "",
+            answer: {
+                A: "JavaScript",
+                B: "Java",
+                C: "C",
+                D: "Go",
+            },
+            correct_answer: "A",
         },
     ],
     quizSetting: {
-        quiz_title: "New Quiz",
-        quiz_description: "",
+        quiz_title: "Simple Quiz",
+        quiz_description:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
         thumbnail: "",
-        thumbnail_file: "",
-        visibility: "",
+        visibility: "public",
     },
     pixabaySetting: {
         intersectionIdName: "loading",

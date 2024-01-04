@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('quiz_questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('quiz_detail_id')->constrained();
-            $table->string('question_text');
+            $table->string('question_title');
+            $table->string('question_image');
+            $table->integer('duration');
             $table->string('A');
             $table->string('B');
             $table->string('C');

@@ -13,13 +13,14 @@ export const Navigation = () => {
 
     const handleSave = (e) => {
         e.preventDefault();
+        post(route("create.submit"), data);
     };
 
     useEffect(() => {
         let setting = JSON.parse(JSON.stringify(quizSetting));
         setting.path_id = saveDirectory.path_id;
         setData({ questionData, quizSettingData: setting });
-    }, [questionData, quizSetting]);
+    }, [questionData, quizSetting, saveDirectory]);
 
     const handleToggleSetting = () => {
         return dispatch({
@@ -39,7 +40,7 @@ export const Navigation = () => {
                 </Link>
                 <button className="flex justify-between items-center border-slate-300 border font-semibold text-slate-800 rounded">
                     <p className="px-3 hidden md:block">
-                        Super duper quiz in the world
+                        {quizSetting.quiz_title}
                     </p>
                     <p
                         onClick={handleToggleSetting}

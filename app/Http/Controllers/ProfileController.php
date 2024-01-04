@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -40,14 +41,23 @@ class ProfileController extends Controller
             $request->user()->email_verified_at = null;
         }
 
-        if ($request->hasFile('profile_pic')) {
+        if (preg_match('/^data:image\/\w+;base64,/', $request->input('profile_pic')) === 1) {
+
             $request->validate([
-                'profile_pic' => 'mimes:jpg,png,jpeg|max:5048'
+                'profile_pic' => [
+                    'required',
+                    'string',
+                ],
             ]);
-            $file = $request->file('profile_pic');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path() . '/profile_pic', $filename);
+
+            $base64Image = $request->input('profile_pic');
+            $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));
+            $filename = time() . '.jpg';
             $profile_pic_db_name = '/profile_pic/' . $filename;
+
+            File::put(public_path() . $profile_pic_db_name, $imageData);
+        } else if (preg_match('/\/profile_pic\//', $request->input('profile_pic')) === 1) {
+            $profile_pic_db_name =  $request->input('profile_pic');
         } else {
             $profile_pic_db_name = '';
             $query = DB::select("SELECT profile_pic from users WHERE email = :userEmail", ['userEmail' => $request->user()->email]);

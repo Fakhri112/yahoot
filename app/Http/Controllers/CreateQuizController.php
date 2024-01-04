@@ -8,10 +8,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectResponse;
 
 class CreateQuizController extends Controller
 {
@@ -41,8 +43,82 @@ class CreateQuizController extends Controller
         ]);
     }
 
-    public function submitCreateQuizData()
+    public function submitCreateQuizData(Request $request)
     {
+        //  return dd($request->input('questionData'));
+
+
+
+        $quiz_details = $request->input('quizSettingData');
+        if (preg_match('/^data:image\/\w+;base64,/', $quiz_details['thumbnail']) === 0) {
+            return back()->withErrors("Thumbnail required!");
+        }
+
+        $request->validate([
+            $quiz_details['thumbnail'] => ['string'],
+        ]);
+
+        $base64thumbnail = $quiz_details['thumbnail'];
+        $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64thumbnail));
+
+
+        $directory_path = '/user_quiz/' . time();
+        File::makeDirectory(public_path() . $directory_path);
+        $thumbnail = $directory_path . '/thumbnail.jpg';
+        File::put(public_path() . $thumbnail, $imageData);
+
+        $quiz_detail_id = DB::table('quiz_details')->insertGetId([
+            'quiz_name' => $quiz_details['quiz_title'],
+            'visibility' => $quiz_details['visibility'],
+            'quiz_description' => $quiz_details['quiz_description'],
+            'thumbnail' => $thumbnail,
+            'total_players' => 0,
+            'user_id' => $request->user()->id,
+            'folder_id' => $quiz_details['path_id']
+        ]);
+
+        $questionDatas = $request->input('questionData');
+        foreach ($questionDatas as $questionData) {
+            if (preg_match('/^data:image\/\w+;base64,/', $questionData['image_file']) === 0) {
+                return back()->withErrors("There is a question with no image. Check it First!");
+            }
+            Validator::make($questionData, [
+                'question' => 'required',
+                'duration' => 'required',
+                'correct_answer' => 'required',
+                'answer.A' => 'required',
+                'answer.B' => 'required',
+                'answer.C' => 'required',
+                'answer.D' => 'required',
+            ], [
+                'question.required' => 'There is a question with no question title. Check it First!',
+                'duration.required' => 'There is a question with no duration. Check it First!',
+                'correct_answer.required' => 'There is a question with no selected correct answer title. Check it First!',
+                'answer.A.required' => 'There is a question with no answer in option A. Check it First!',
+                'answer.B.required' => 'There is a question with no answer in option B. Check it First!',
+                'answer.C.required' => 'There is a question with no answer in option C. Check it First!',
+                'answer.D.required' => 'There is a question with no answer in option D. Check it First!',
+            ]);
+
+            $base64QuestionImage = $questionData['image_file'];
+            $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64QuestionImage));
+            $question_image = $directory_path . '/' . $questionData['id'] . '.jpg';
+            File::put(public_path() . $question_image, $imageData);
+
+            DB::table('quiz_questions')->insertGetId([
+                'question_title' => $questionData['question'],
+                'question_image' => $question_image,
+                'A' => $questionData['answer']['A'],
+                'B' => $questionData['answer']['B'],
+                'C' => $questionData['answer']['C'],
+                'D' => $questionData['answer']['D'],
+                'correct_answer' => $questionData['correct_answer'],
+                'duration' => $questionData['duration'],
+                'quiz_detail_id' => $quiz_detail_id
+            ]);
+        }
+
+        return Redirect::to('user');
     }
 
     private function formatFolders($items, $parentId = null)

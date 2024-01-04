@@ -8,7 +8,6 @@ import ImageCropper from "@/Components/ImageCropper";
 const CROPPER_CONF = {
     selectedImage: "",
     cropModal: false,
-    croppedImage: "",
     cropShape: "round",
     ratio: 1 / 1,
 };
@@ -18,15 +17,12 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
     const { data, setData, post } = useForm({
         name: user.name,
         email: user.email,
-        profile_pic: user.profile_pic,
+        profile_pic: "",
     });
     const [CropperComponent, SetCropperComponent] = useState(CROPPER_CONF);
 
     useEffect(() => {
-        SetCropperComponent({
-            ...CropperComponent,
-            croppedImage: data.profile_pic,
-        });
+        setData("profile_pic", user.profile_pic);
     }, []);
 
     const submit = (e) => {
@@ -63,10 +59,9 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                     SetCroppedImage={(state) => {
                         SetCropperComponent({
                             ...CropperComponent,
-                            croppedImage: state.image_link,
                             cropModal: !CropperComponent.cropModal,
                         });
-                        setData("profile_pic", state.image_file);
+                        setData("profile_pic", state.image);
                     }}
                 />
                 <main className="pb-24 md:ml-24 h-[calc(100vh)] bg-slate-50 p-2">
@@ -88,7 +83,7 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                                 </div>
                                 <hr className="my-2 border-slate-200" />
                                 <div className="flex gap-x-9 md:w-8/12 px-3 py-2 pb-7">
-                                    {CropperComponent.croppedImage ? null : (
+                                    {data.profile_pic ? null : (
                                         <input
                                             type="file"
                                             id="inputProfile"
@@ -104,13 +99,10 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                                         grid place-items-center hover:bg-blue-400 hover:cursor-pointer z-10
                                         "
                                         onMouseUp={() =>
-                                            SetCropperComponent({
-                                                ...CropperComponent,
-                                                croppedImage: "",
-                                            })
+                                            setData("profile_pic", "")
                                         }
                                     >
-                                        {CropperComponent.croppedImage ? (
+                                        {data.profile_pic ? (
                                             <div>
                                                 <div
                                                     className="hover:after:content-['Remove_Image'] hover:after:text-white hover:after:text-center
@@ -118,9 +110,7 @@ const Setting = ({ auth, mustVerifyEmail, status }) => {
                                                     after:transform after:-translate-x-1/2 after:-translate-y-1/2 "
                                                 ></div>
                                                 <img
-                                                    src={
-                                                        CropperComponent.croppedImage
-                                                    }
+                                                    src={data.profile_pic}
                                                     alt=""
                                                     className="rounded-full z-50"
                                                 />

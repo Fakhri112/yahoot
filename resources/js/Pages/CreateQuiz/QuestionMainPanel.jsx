@@ -17,7 +17,6 @@ export const QuestionMainPanel = () => {
         const QuestionCopy = JSON.parse(JSON.stringify(questionData));
         for (let index = 0; index < QuestionCopy.length; index++) {
             if (selectedQuestion === QuestionCopy[index].id) {
-                QuestionCopy[index].image_link = "";
                 QuestionCopy[index].image_file = "";
             }
         }
@@ -171,7 +170,7 @@ md:col-span-10 md:row-[span_7_/_span_7] md:w-full md:h-full"
                             </select>
                         </div>
                         <div className="w-[52vh] h-[32vh] grid place-items-center bg-slate-400 drop-shadow-md rounded">
-                            {value.image_link.length !== 0 ? (
+                            {value.image_file.length !== 0 ? (
                                 <div>
                                     <button
                                         className="absolute p-3 bg-white hover:bg-red-500"
@@ -186,7 +185,7 @@ md:col-span-10 md:row-[span_7_/_span_7] md:w-full md:h-full"
                                         </svg>
                                     </button>
                                     <img
-                                        src={value.image_link}
+                                        src={value.image_file}
                                         alt="Quiz Image"
                                     />
                                 </div>
