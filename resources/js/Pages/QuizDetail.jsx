@@ -4,21 +4,26 @@ import ProfilePicture from "@/Components/svg/ProfilePicture";
 import NavBar from "@/Components/NavBar";
 import ProfileSidebar from "@/Components/ProfileSidebar";
 import { Disclosure } from "@headlessui/react";
+import { Head } from "@inertiajs/react";
 
-const Reports = () => {
+const Reports = ({ title, quiz, questions, auth }) => {
+    const user = auth.user;
     return (
         <>
+            <Head title={title} />
             <div className="h-screen bg-white overflow-hidden">
                 <NavBar />
                 <ProfileSidebar />
                 <main className="pb-20 md:pb-0 h-[calc(100vh-12%)] bg-slate-200 ms-0 md:ms-24 grid grid-cols-1 md:grid-cols-12 overflow-y-auto">
                     <div className="col-span-4 text-slate-900 border border-slate-100 bg-white">
-                        <img src="/image.png" alt="" />
+                        <img src={quiz.thumbnail} alt="" />
                         <div className="p-2">
                             <h1 className="font-bold text-xl">
-                                30 Basic Ruby Languange Trivia
+                                {quiz.quiz_name}
                             </h1>
-                            <p>892 plays &#x2022; 2.8k players</p>
+                            <p>
+                                892 plays &#x2022; {quiz.total_players} players
+                            </p>
                             <div className="flex gap-x-6">
                                 <button className="bg-blue-700 w-full text-lg font-semibold rounded text-slate-100 hover:bg-blue-800 py-1 my-2">
                                     Start
@@ -30,69 +35,90 @@ const Reports = () => {
                             <div className="flex gap-x-3 items-center py-2">
                                 <ProfilePicture className="h-10" />
                                 <p className="text-sm font-semibold">
-                                    Fakhrie_3310
+                                    {user.name}
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-8 w-full h-full border-black text-slate-900 px-4 py-6">
-                        <p className="font-semibold text-xl">Question (12)</p>
-                        <Disclosure
-                            as="div"
-                            className="bg-base-200 rounded-none border "
-                        >
-                            <Disclosure.Button
+                    <div className="col-span-8 w-full overflow-y-auto border-black text-slate-900 px-4 py-6">
+                        <p className="font-semibold text-xl">
+                            Question ({questions.length})
+                        </p>
+                        {questions.map((question, index) => (
+                            <Disclosure
                                 as="div"
-                                className="p-0 flex h-24 justify-between bg-white cursor-pointer hover:bg-blue-200"
+                                className="bg-base-200 rounded-none border mb-2"
                             >
-                                <div className="p-4 text-sm">
-                                    <p>1. Quiz</p>
-                                    <b>
-                                        What verb would be the most suitable for
-                                        the sentence?
-                                    </b>
-                                </div>
-                                <div className="flex border ">
-                                    <img src="/image.png" alt="" />
-                                    <p className="absolute text-slate-700 font-semibold rounded m-1 text-sm bg-slate-50 px-1">
-                                        20 Sec
-                                    </p>
-                                </div>
-                            </Disclosure.Button>
-                            <Disclosure.Panel
-                                as="div"
-                                className="collapse-content flex flex-col gap-y-4 bg-white px-3 pb-2"
-                            >
-                                <div className="flex justify-between items-center">
-                                    <div className="flex gap-x-2 items-center">
-                                        <Triangle className="bg-red-700 p-2 fill-white h-10 w-10 rounded" />
-                                        <p>Kawa</p>
+                                <Disclosure.Button
+                                    as="div"
+                                    className="p-0 flex h-24 justify-between bg-white cursor-pointer hover:bg-blue-200"
+                                >
+                                    <div className="p-4 text-sm">
+                                        <p>{index + 1}. Quiz</p>
+                                        <b>{question.question_title}</b>
                                     </div>
-                                    &#10004;
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <div className="flex gap-x-2 items-center">
-                                        <Rhombus className="bg-blue-600 p-2 fill-white h-10 w-10 rounded" />
-                                        <p>Umi</p>
+                                    <div className="relative flex ">
+                                        <img
+                                            src={question.question_image}
+                                            alt=""
+                                            className="grow"
+                                        />{" "}
+                                        <p className="absolute text-slate-700 font-semibold rounded m-1 text-sm bg-slate-50 px-1 top-0">
+                                            {question.duration} Sec
+                                        </p>
                                     </div>
-                                    &#10060;
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <div className="flex gap-x-2 items-center">
-                                        <Circle className="bg-amber-500 p-2 fill-white h-10 w-10 rounded" />
-                                        Yama
+                                </Disclosure.Button>
+                                <Disclosure.Panel
+                                    as="div"
+                                    className="collapse-content flex flex-col gap-y-4 bg-white px-3 pb-2"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex gap-x-2 items-center">
+                                            <Triangle className="bg-red-700 p-2 fill-white h-10 w-10 rounded" />
+                                            <p> {question.A}</p>
+                                        </div>
+                                        {question.correct_answer == "A" ? (
+                                            <>&#10004;</>
+                                        ) : (
+                                            <> &#10060;</>
+                                        )}
                                     </div>
-                                    &#10060;
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <div className="flex gap-x-2 items-center">
-                                        <Square className="fill-white bg-green-600 p-2 h-10 w-10 rounded" />
-                                        Nami
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex gap-x-2 items-center">
+                                            <Rhombus className="bg-blue-600 p-2 fill-white h-10 w-10 rounded" />
+                                            <p>{question.B} </p>
+                                        </div>
+                                        {question.correct_answer == "B" ? (
+                                            <>&#10004;</>
+                                        ) : (
+                                            <> &#10060;</>
+                                        )}
                                     </div>
-                                    &#10060;
-                                </div>
-                            </Disclosure.Panel>
-                        </Disclosure>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex gap-x-2 items-center">
+                                            <Circle className="bg-amber-500 p-2 fill-white h-10 w-10 rounded" />
+                                            <p>{question.C} </p>
+                                        </div>
+                                        {question.correct_answer == "C" ? (
+                                            <>&#10004;</>
+                                        ) : (
+                                            <> &#10060;</>
+                                        )}
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex gap-x-2 items-center">
+                                            <Square className="fill-white bg-green-600 p-2 h-10 w-10 rounded" />
+                                            <p> {question.D} </p>
+                                        </div>
+                                        {question.correct_answer == "D" ? (
+                                            <>&#10004;</>
+                                        ) : (
+                                            <> &#10060;</>
+                                        )}
+                                    </div>
+                                </Disclosure.Panel>
+                            </Disclosure>
+                        ))}
                     </div>
                 </main>
             </div>

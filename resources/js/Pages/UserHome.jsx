@@ -3,8 +3,10 @@ import ProfilePicture from "../Components/svg/ProfilePicture";
 import ProfileSidebar from "@/Components/ProfileSidebar";
 import NavBar from "@/Components/NavBar";
 import CardQuiz from "@/Components/CardQuiz";
+import { useForm } from "@inertiajs/react";
 
-const user_home = () => {
+const user_home = ({ auth, quizzesData }) => {
+    const user = auth.user;
     return (
         <>
             <div className="h-screen bg-white overflow-hidden">
@@ -18,9 +20,17 @@ const user_home = () => {
                         "
                         >
                             <div className="flex flex-col items-center md:flex-row">
-                                <ProfilePicture className="h-20" />
+                                {user.profile_pic ? (
+                                    <img
+                                        src={user.profile_pic}
+                                        className="rounded-full h-20 me-1"
+                                    />
+                                ) : (
+                                    <ProfilePicture className="h-20" />
+                                )}
+
                                 <p className="font-bold text-2xl text-slate-600">
-                                    Fakhri_3310
+                                    {user.name}
                                 </p>
                             </div>
                             <div
@@ -42,8 +52,13 @@ const user_home = () => {
                             </div>
                         </div>
                         <div className="text-slate-900 grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-4">
-                            <CardQuiz />
-                            <CardQuiz />
+                            {quizzesData.map((data, index) => (
+                                <CardQuiz
+                                    key={index}
+                                    data={{ ...data }}
+                                    username={user.name}
+                                />
+                            ))}
                         </div>
                     </div>
                 </main>

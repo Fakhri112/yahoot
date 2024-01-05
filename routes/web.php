@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CreateQuizController;
+use App\Http\Controllers\UserHomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuizDetailController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -58,19 +60,15 @@ Route::middleware('auth')->group(function () {
         ]);
     });
 
-    Route::get('/detail', function () {
-        return Inertia::render('QuizDetail');
-    });
 
-
+    Route::get('/detail/{id}', [QuizDetailController::class, 'getQuizDetailData']);
 
     Route::get('/create',  [CreateQuizController::class, 'getQuizData']);
     Route::post('/create',  [CreateQuizController::class, 'submitCreateQuizdata'])->name('create.submit');
 
     Route::prefix('user')->group(function () {
-        Route::get('', function () {
-            return Inertia::render('UserHome');
-        });
+
+        Route::get('',  [UserHomeController::class, 'getUserData']);
         Route::get('/library', function () {
             return Inertia::render('Library');
         });
