@@ -28,9 +28,6 @@ export const CreateQuizProvider = ({ children, folderData }) => {
         });
     }, []);
 
-    console.log(state.questionData);
-    console.log(state.quizSetting);
-
     return (
         <CreateQuizState.Provider value={state}>
             <CreateQuizDispatch.Provider value={dispatch}>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CreateQuizController;
+use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\UserHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizDetailController;
@@ -69,9 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('user')->group(function () {
 
         Route::get('',  [UserHomeController::class, 'getUserData']);
-        Route::get('/library', function () {
-            return Inertia::render('Library');
-        });
+        Route::get('/library', [LibraryController::class, 'getLibraryData']);
         Route::get('/reports', function () {
             return Inertia::render('Reports');
         });
