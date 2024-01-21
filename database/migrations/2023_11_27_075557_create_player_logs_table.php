@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('player_logs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('answered');
             $table->boolean('correct_incorrect');
             $table->float('time');
             $table->integer('points');
-            $table->foreignId('quiz_questions_id')->constrained();
-            $table->foreignId('player_results_id')->constrained();
+            $table->foreignId('quiz_question_id')->constrained();
+            $table->foreignId('player_result_id')->constrained();
             $table->timestamps();
         });
     }

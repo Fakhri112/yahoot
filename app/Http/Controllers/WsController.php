@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LibraryWebsocket;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -15,18 +16,21 @@ use Inertia\Response;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectResponse;
 
-class UserHomeController extends Controller
+class WsController extends Controller
 {
     /**
      * Display the user's profile form.
      */
-    public function page()
+    public function test()
     {
 
-        $quizzes = DB::table('quiz_details')->get();
-        return Inertia::render(('UserHome'), [
-            'quizzesData' => $quizzes,
-            'pageTitle' => 'Create Quiz'
-        ]);
+        broadcast(new LibraryWebsocket('www'));
+
+        // $quizzes = DB::table('quiz_details')->where('user_id', $request->user()->id)->get();
+        // // return dd($quizzes);
+        // return Inertia::render(('Library/Index'), [
+        //     'quizzesData' => $quizzes,
+        //     'pageTitle' => 'My Library'
+        // ]);
     }
 }

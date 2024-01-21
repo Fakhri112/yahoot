@@ -100,6 +100,16 @@ export const ImagePicker = () => {
             },
         });
 
+        dispatch({
+            type: "UPDATE_PIXABAY_SETTING",
+            payload: {
+                ...pixabaySetting,
+                intersectionIdName: "loading",
+                search: "",
+                loadedCount: 0,
+            },
+        });
+
         handleModal().toggleImagePicker();
     };
 
@@ -119,7 +129,13 @@ export const ImagePicker = () => {
                 },
             });
         };
-        return { toggleImagePicker, toggleSetting };
+        const toggleImageCropper = () => {
+            return dispatch({
+                type: "UPDATE_CROPPER_COMP_SETTING",
+                payload: { ...cropperCompSetting, cropModal: false },
+            });
+        };
+        return { toggleImagePicker, toggleSetting, toggleImageCropper };
     };
 
     const handleImageUpload = (e) => {
@@ -156,13 +172,15 @@ export const ImagePicker = () => {
                     // thumbnail_file: state.image_file,
                 },
             });
-        else
+        if (!pixabaySetting.forThumbnail) {
             for (let index = 0; index < QuestionCopy.length; index++) {
                 if (selectedQuestion === QuestionCopy[index].id) {
                     QuestionCopy[index].image_file = state.image;
                     // (QuestionCopy[index].image_file = state.image_file);
                 }
             }
+        }
+
         dispatch({ type: "UPDATE_QUESTION_DATA", payload: [...QuestionCopy] });
         dispatch({
             type: "UPDATE_PIXABAY_SETTING",
@@ -172,17 +190,17 @@ export const ImagePicker = () => {
                 loadedCount: 0,
             },
         });
-        dispatch({
-            type: "UPDATE_CROPPER_COMP_SETTING",
-            payload: { ...cropperCompSetting, cropModal: false },
-        });
+        handleModal().toggleImageCropper();
     };
+
+    console.log(pixabaySetting);
 
     return (
         <>
             <ImageCropper
                 {...cropperCompSetting}
                 SetCroppedImage={handleSetCropImage}
+                SetCropModal={handleModal().toggleImageCropper}
             ></ImageCropper>
             <ReactModal
                 isOpen={modal.image_picker}

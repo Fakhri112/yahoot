@@ -17,16 +17,10 @@ const NavBar = () => {
                 </Link>
             </div>
             <div className="flex items-center gap-x-3">
-                <Link
-                    href="/create"
-                    className="bg-blue-700 py-2 px-3 font-semibold text-slate-100 rounded"
-                >
+                <Link href="/create" className="btn-primary py-2 px-3 ">
                     Create
                 </Link>
-                <Link
-                    href="/browse"
-                    className="bg-green-700 py-2 px-3 font-semibold text-slate-100 rounded"
-                >
+                <Link href="/browse" className="btn-success py-2 px-3 ">
                     Browse
                 </Link>
                 <NavDropdown />

@@ -20,18 +20,16 @@ class QuizDetailController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function getQuizDetailData(Request $request, $id)
+    public function page(Request $request, $id)
     {
 
         $quiz = DB::table('quiz_details')->where('id', $id)->get();
         if (count($quiz) == 0) {
             return redirect('404');
         }
-
         $questions = DB::table('quiz_questions')->where('quiz_detail_id', $id)->get();
+        // dd($questions);
 
-        // return dd();
-        //  return 
         return Inertia::render('QuizDetail', [
             'title' => $quiz[0]->quiz_name,
             'quiz' => $quiz[0],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Folder;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+
+use function Laravel\Prompts\error;
 
 class RegisteredUserController extends Controller
 {
@@ -44,13 +47,18 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        DB::table('folders')->insert([
-            'folder_name' => "My Drive",
-            'parent_folder' => NULL,
-            'user_id' => $user->id
-        ]);
+        // DB::table('folders')->insert([
+        //     'folder_name' => "My Drive",
+        //     'parent_folder' => NULL,
+        //     'user_id' => $user->id
+        // ]);
 
-        error_log($user);
+        $folders = new Folder();
+        $folders->folder_name = "My Drive";
+        $folders->parent_folder = NULL;
+        $folders->user_id = $user->id;
+        $folders->save();
+
 
         event(new Registered($user));
 

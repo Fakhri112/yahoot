@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\QuizDetail;
+use App\Models\QuizQuestion;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +22,7 @@ class CreateQuizController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function getQuizData()
+    public function page()
     {
 
         $Folders = DB::table('folders')
@@ -45,9 +47,6 @@ class CreateQuizController extends Controller
 
     public function submitCreateQuizData(Request $request)
     {
-        //  return dd($request->input('questionData'));
-
-
 
         $quiz_details = $request->input('quizSettingData');
         if (preg_match('/^data:image\/\w+;base64,/', $quiz_details['thumbnail']) === 0) {
@@ -62,20 +61,24 @@ class CreateQuizController extends Controller
         $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64thumbnail));
 
 
-        $directory_path = '/user_quiz/' . time();
+        $directory_path = '/user_quiz/' .  bin2hex(random_bytes(8));
         File::makeDirectory(public_path() . $directory_path);
         $thumbnail = $directory_path . '/thumbnail.jpg';
         File::put(public_path() . $thumbnail, $imageData);
 
-        $quiz_detail_id = DB::table('quiz_details')->insertGetId([
-            'quiz_name' => $quiz_details['quiz_title'],
-            'visibility' => $quiz_details['visibility'],
-            'quiz_description' => $quiz_details['quiz_description'],
-            'thumbnail' => $thumbnail,
-            'total_players' => 0,
-            'user_id' => $request->user()->id,
-            'folder_id' => $quiz_details['path_id']
-        ]);
+        $quiz_detail = new QuizDetail();
+
+
+        $quiz_detail->quiz_name = $quiz_details['quiz_title'];
+        $quiz_detail->visibility = $quiz_details['visibility'];
+        $quiz_detail->quiz_description = $quiz_details['quiz_description'];
+        $quiz_detail->thumbnail = $thumbnail;
+        $quiz_detail->total_players = 0;
+        $quiz_detail->user_id = $request->user()->id;
+        $quiz_detail->folder_id = $quiz_details['path_id'];
+        $quiz_detail->save();
+
+
 
         $questionDatas = $request->input('questionData');
         foreach ($questionDatas as $questionData) {
@@ -105,17 +108,19 @@ class CreateQuizController extends Controller
             $question_image = $directory_path . '/' . $questionData['id'] . '.jpg';
             File::put(public_path() . $question_image, $imageData);
 
-            DB::table('quiz_questions')->insertGetId([
-                'question_title' => $questionData['question'],
-                'question_image' => $question_image,
-                'A' => $questionData['answer']['A'],
-                'B' => $questionData['answer']['B'],
-                'C' => $questionData['answer']['C'],
-                'D' => $questionData['answer']['D'],
-                'correct_answer' => $questionData['correct_answer'],
-                'duration' => $questionData['duration'],
-                'quiz_detail_id' => $quiz_detail_id
-            ]);
+            $quiz_question = new QuizQuestion();
+
+
+            $quiz_question->question_title = $questionData['question'];
+            $quiz_question->question_image = $question_image;
+            $quiz_question->A = $questionData['answer']['A'];
+            $quiz_question->B = $questionData['answer']['B'];
+            $quiz_question->C = $questionData['answer']['C'];
+            $quiz_question->D = $questionData['answer']['D'];
+            $quiz_question->correct_answer = $questionData['correct_answer'];
+            $quiz_question->duration = $questionData['duration'];
+            $quiz_question->quiz_detail_id = $quiz_detail->id;
+            $quiz_question->save();
         }
 
         return Redirect::to('user');
@@ -133,12 +138,10 @@ class CreateQuizController extends Controller
                     'type' => 'folder'
                 ];
 
-                // Check if it's a folder and has children
+
                 if (isset(optional($item)->folder_name) && $items->where('parent_folder', optional($item)->id)->count() > 0) {
-                    // Recursively format children
                     $formattedItem['children'] = $this->formatFolders($items, optional($item)->id);
                 } else {
-                    // Add an empty array for folders without children
                     $formattedItem['children'] = [];
                 }
 
@@ -200,6 +203,4 @@ class CreateQuizController extends Controller
 
         return json_encode($assignQuiz);
     }
-
-    // Helper function to find a folder by its id
 }

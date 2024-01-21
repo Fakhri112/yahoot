@@ -18,7 +18,7 @@ export const QuizSetting = () => {
         });
     };
 
-    const quiz_thumbnail = () =>
+    const quiz_thumbnail = () => {
         dispatch({
             type: "UPDATE_QUIZ_SETTING",
             payload: {
@@ -27,6 +27,7 @@ export const QuizSetting = () => {
                 thumbnail_file: "",
             },
         });
+    };
 
     const handleModal = (e) => {
         const toggleSetting = () => {

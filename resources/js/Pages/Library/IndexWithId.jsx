@@ -1,4 +1,3 @@
-import React from "react";
 import ProfileSidebar from "@/Components/ProfileSidebar";
 import NavBar from "@/Components/NavBar";
 import { LeftSideFolder } from "./LeftSideFolder";
@@ -11,13 +10,13 @@ import { QuizPanel } from "./MainPanel/QuizPanel";
 import LibraryModal from "./Modal/LibraryModal";
 import { EmptyFolder } from "./MainPanel/EmptyFolder";
 
-const Index = ({ auth, pageTitle }) => {
+const IndexWithId = ({ auth, pageTitle, folderId, path }) => {
     return (
         <>
             <div className="h-screen bg-white overflow-hidden">
                 <NavBar />
                 <ProfileSidebar />
-                <LibraryProvider auth={auth}>
+                <LibraryProvider auth={auth} folderId={folderId} path={path}>
                     <LeftSideFolder />
                     <LibraryModal />
                     <RightSideMainPanel>
@@ -34,4 +33,4 @@ const Index = ({ auth, pageTitle }) => {
     );
 };
 
-export default Index;
+export default IndexWithId;

@@ -14,14 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('quiz_details', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('quiz_name');
             $table->string('visibility');
             $table->string('quiz_description', 2048);
             $table->string('thumbnail');
             $table->string('total_players');
             $table->foreignUuid('user_id')->constrained();
-            $table->foreignId('folder_id')->constrained();
+            $table->foreignUuid('folder_id')->constrained();
             $table->timestamps();
         });
     }

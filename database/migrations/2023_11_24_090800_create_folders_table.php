@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('folders', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('folder_name');
-            $table->integer('parent_folder')->nullable();
+            $table->string('parent_folder')->nullable();
             $table->foreignUuid('user_id')->constrained();
             $table->timestamps();
         });
