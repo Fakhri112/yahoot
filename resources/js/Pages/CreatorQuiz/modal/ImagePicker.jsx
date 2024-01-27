@@ -1,12 +1,13 @@
 import ImageCropper from "@/Components/ImageCropper";
 import {
-    useCreateQuizDispatch,
-    useCreateQuizState,
-} from "@/Components/context/CreateQuizContext";
-import React, { useCallback, useEffect } from "react";
+    useCreatorQuizDispatch,
+    useCreatorQuizState,
+} from "@/Components/context/CreatorQuizContext";
+import { Spinner } from "@/Components/svg/Spinner";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactModal from "react-modal";
 export const ImagePicker = () => {
-    const dispatch = useCreateQuizDispatch();
+    const dispatch = useCreatorQuizDispatch();
     const {
         modal,
         pixabaySetting,
@@ -14,12 +15,16 @@ export const ImagePicker = () => {
         questionData,
         quizSetting,
         selectedQuestion,
-    } = useCreateQuizState();
+    } = useCreatorQuizState();
+    const [showMore, SetShowMore] = useState(false);
+    const showMoreRef = useRef();
+    const imageContainerRef = useRef();
+    let timeoutId;
 
     useEffect(() => {
         const getImage = async () => {
             const res = await fetch(
-                "https://pixabay.com/api/?key=39472345-1f9f4091bb251e2fd5b2f1858&order=popular&per_page=18" +
+                "https://pixabay.com/api/?key=39472345-1f9f4091bb251e2fd5b2f1858&orientation=horizontal&order=popular&per_page=18" +
                     `&q=${encodeURIComponent(pixabaySetting.search)}`
             );
             const data = await res.json();
@@ -34,12 +39,13 @@ export const ImagePicker = () => {
 
     const fetchImage = useCallback(async () => {
         let imageData = await fetch(
-            "https://pixabay.com/api/?key=39472345-1f9f4091bb251e2fd5b2f1858&order=popular&per_page=" +
+            "https://pixabay.com/api/?key=39472345-1f9f4091bb251e2fd5b2f1858&orientation=horizontal&order=popular&per_page=" +
                 pixabaySetting.per_page +
                 `&q=${encodeURIComponent(pixabaySetting.search)}`
         );
 
         let response = await imageData.json();
+
         return dispatch({
             type: "UPDATE_PIXABAY_SETTING",
             payload: {
@@ -51,17 +57,18 @@ export const ImagePicker = () => {
     }, [modal.image_picker, pixabaySetting]);
 
     useEffect(() => {
-        const targetElement = document.getElementById(
-            pixabaySetting.intersectionIdName
-        );
+        const targetElement = showMoreRef.current;
         if (targetElement) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        fetchImage();
-                    }
-                });
-            });
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            fetchImage();
+                        }
+                    });
+                },
+                { threshold: 0.5 }
+            );
             observer.observe(targetElement);
             return () => {
                 observer.unobserve(targetElement);
@@ -78,6 +85,7 @@ export const ImagePicker = () => {
                     intersectionIdName: "loading-true",
                 },
             });
+        SetShowMore(false);
         return dispatch({
             type: "UPDATE_PIXABAY_SETTING",
             payload: {
@@ -85,7 +93,6 @@ export const ImagePicker = () => {
                 intersectionIdName: "loading",
                 search: "",
                 forThumbnail: false,
-                loadedCount: 0,
             },
         });
     }, [modal.image_picker]);
@@ -99,14 +106,13 @@ export const ImagePicker = () => {
                 cropModal: !cropperCompSetting.cropModal,
             },
         });
-
+        SetShowMore(false);
         dispatch({
             type: "UPDATE_PIXABAY_SETTING",
             payload: {
                 ...pixabaySetting,
                 intersectionIdName: "loading",
                 search: "",
-                loadedCount: 0,
             },
         });
 
@@ -182,18 +188,31 @@ export const ImagePicker = () => {
         }
 
         dispatch({ type: "UPDATE_QUESTION_DATA", payload: [...QuestionCopy] });
+        SetShowMore(false);
         dispatch({
             type: "UPDATE_PIXABAY_SETTING",
             payload: {
                 ...pixabaySetting,
                 forThumbnail: false,
-                loadedCount: 0,
             },
         });
         handleModal().toggleImageCropper();
     };
 
-    console.log(pixabaySetting);
+    const handleSearch = (e) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+            SetShowMore(false);
+            dispatch({
+                type: "UPDATE_PIXABAY_SETTING",
+                payload: {
+                    ...pixabaySetting,
+                    image: [],
+                    search: e.target.value,
+                },
+            });
+        }, 700);
+    };
 
     return (
         <>
@@ -205,71 +224,70 @@ export const ImagePicker = () => {
             <ReactModal
                 isOpen={modal.image_picker}
                 shouldCloseOnOverlayClick={true}
-                onRequestClose={handleModal().toggleSetting}
+                onRequestClose={handleModal().toggleImagePicker}
                 appElement={document.getElementById("app")}
                 className="relative rounded w-[40%] min-w-[400px] h-[86%] p-3 bg-white flex flex-col"
                 overlayClassName="absolute inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
             >
-                <div className="h-full overflow-y-auto">
-                    <div className="text-center">
-                        <input
-                            onChange={(e) =>
-                                dispatch({
-                                    type: "UPDATE_PIXABAY_SETTING",
-                                    payload: {
-                                        ...pixabaySetting,
-                                        image: [],
-                                        search: e.target.value,
-                                        loadedCount: 0,
-                                    },
-                                })
-                            }
-                            type="text"
-                            placeholder="search"
-                            className="w-[80%]"
-                        />
-                    </div>
-                    <div className="flex justify-between mt-6">
-                        <p>
-                            <b>Popular Image</b>
-                        </p>
-                        <p>Provided by Pixabay</p>
-                    </div>
-                    <hr />
-                    <div>
-                        <div className="grid md:grid-cols-3 gap-3">
-                            {pixabaySetting.image.map((item) => {
+                <div className="text-center">
+                    <input
+                        onChange={handleSearch}
+                        type="text"
+                        placeholder="search"
+                        className="w-[80%]"
+                    />
+                </div>
+                <div className="flex justify-between mt-6">
+                    <p>
+                        <b>Popular Image</b>
+                    </p>
+                    <p>Provided by Pixabay</p>
+                </div>
+                <div
+                    className="overflow-y-auto h-full"
+                    ref={imageContainerRef}
+                    onScroll={() => {
+                        if (
+                            imageContainerRef.current.scrollHeight <=
+                                imageContainerRef.current.offsetHeight ||
+                            showMore
+                        )
+                            return;
+                        SetShowMore(true);
+                    }}
+                >
+                    <div
+                        className={`grid md:grid-cols-3 gap-3 ${
+                            pixabaySetting.image.length == 0 ? "h-full" : ""
+                        }`}
+                    >
+                        {pixabaySetting.image.length == 0 ? (
+                            <div className="h-full  grid place-items-center col-span-3 ">
+                                <Spinner />
+                            </div>
+                        ) : (
+                            pixabaySetting.image.map((item) => {
                                 return (
                                     <img
                                         key={item.id}
                                         src={item.largeImageURL}
                                         className="col-span-1 self-stretch cursor-pointer"
-                                        onLoad={() =>
-                                            dispatch({
-                                                type: "UPDATE_PIXABAY_SETTING",
-                                                payload: {
-                                                    ...pixabaySetting,
-                                                    loadedCount:
-                                                        pixabaySetting.loadedCount +
-                                                        1,
-                                                },
-                                            })
-                                        }
                                         onClick={chooseImage}
                                     />
                                 );
-                            })}
-                        </div>
-                        {pixabaySetting.loadedCount > 9 ? (
-                            <p
-                                id={pixabaySetting.intersectionIdName}
-                                className="text-center p-3 text-lg"
-                            >
-                                Loading...
-                            </p>
-                        ) : null}
+                            })
+                        )}
                     </div>
+                    {showMore ? (
+                        <p
+                            ref={showMoreRef}
+                            className="flex justify-center w-full p-3 text-lg"
+                        >
+                            <Spinner />
+                        </p>
+                    ) : null}
                 </div>
+
                 <div className="h-[10%] pt-4">
                     <input
                         className="hidden mt-4"

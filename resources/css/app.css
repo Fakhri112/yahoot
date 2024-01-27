@@ -32,7 +32,7 @@
         @apply font-semibold bg-slate-400 rounded text-slate-100;
       }
       .btn-secondary{
-        @apply font-semibold hover:bg-slate-300 bg-slate-200 rounded text-slate-800;
+        @apply font-semibold hover:bg-slate-400 bg-slate-300 rounded text-slate-800;
       }
       
   }

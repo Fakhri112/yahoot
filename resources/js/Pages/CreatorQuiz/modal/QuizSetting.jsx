@@ -1,13 +1,13 @@
 import ReactModal from "react-modal";
 import {
-    useCreateQuizDispatch,
-    useCreateQuizState,
-} from "@/Components/context/CreateQuizContext";
+    useCreatorQuizDispatch,
+    useCreatorQuizState,
+} from "@/Components/context/CreatorQuizContext";
 
 export const QuizSetting = () => {
-    const dispatch = useCreateQuizDispatch();
+    const dispatch = useCreatorQuizDispatch();
     const { pixabaySetting, quizSetting, saveDirectory, modal } =
-        useCreateQuizState();
+        useCreatorQuizState();
 
     const handleQuizSetting = (e) => {
         const settingCopy = JSON.parse(JSON.stringify(quizSetting));

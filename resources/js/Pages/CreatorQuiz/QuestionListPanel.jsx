@@ -1,13 +1,13 @@
 import {
-    useCreateQuizDispatch,
-    useCreateQuizState,
+    useCreatorQuizDispatch,
+    useCreatorQuizState,
     stateList,
-} from "@/Components/context/CreateQuizContext";
+} from "@/Components/context/CreatorQuizContext";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export const QuestionListPanel = () => {
-    const dispatch = useCreateQuizDispatch();
-    const { questionData, selectedQuestion } = useCreateQuizState();
+    const dispatch = useCreatorQuizDispatch();
+    const { questionData, selectedQuestion } = useCreatorQuizState();
 
     const handleAddQuestion = () => {
         const new_quiz = JSON.parse(JSON.stringify(stateList)).questionData;

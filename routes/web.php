@@ -1,13 +1,11 @@
 <?php
 
-use App\Http\Controllers\CreateQuizController;
+use App\Http\Controllers\CreatorQuizController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\UserHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizDetailController;
 use App\Http\Controllers\WsController;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Termwind\Components\Raw;
@@ -69,8 +67,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/detail/{id}', [QuizDetailController::class, 'page']);
 
-    Route::get('/create',  [CreateQuizController::class, 'page']);
-    Route::post('/create',  [CreateQuizController::class, 'submitCreateQuizdata'])->name('create.submit');
+    Route::get('/create',  [CreatorQuizController::class, 'page']);
+    Route::post('/create',  [CreatorQuizController::class, 'submitCreateQuizdata'])->name('create.submit');
+    Route::get('/edit/{id}',  [CreatorQuizController::class, 'editQuizPage']);
+    Route::patch('/edit',  [CreatorQuizController::class, 'submitUpdateQuizData'])->name('create.update');
+
 
     Route::prefix('user')->group(function () {
 
@@ -79,14 +80,15 @@ Route::middleware('auth')->group(function () {
 
 
         Route::get('/library', [LibraryController::class, 'page']);
-        Route::get('/library/quizzes', [LibraryController::class, 'getQuizzes']);
-        Route::get('/library/folders', [LibraryController::class, 'getFolders']);
-        Route::get('/library/get-full-directory', [LibraryController::class, 'getFullDirectory']);
-        Route::get('/library/{id}', [LibraryController::class, 'pageWithId']);
-        Route::get('/library/{id}/folders', [LibraryController::class, 'getFoldersWithId']);
-        Route::get('/library/{id}/quizzes', [LibraryController::class, 'getQuizzesWithId']);
 
-        Route::post('/library/new-folder/{parent_id}', [LibraryController::class, 'addNewFolder'])->name('library.newfolder');
+        Route::get('/library/get-full-directory', [LibraryController::class, 'getFullDirectory']);
+        Route::get('/library/recent', [LibraryController::class, 'pageRecent']);
+        Route::get('/library/{id}', [LibraryController::class, 'pageWithId']);
+
+
+        Route::post('/library/folders', [LibraryController::class, 'getFolders']);
+        Route::post('/library/quizzes', [LibraryController::class, 'getQuizzes']);
+        Route::post('/library/new-folder/', [LibraryController::class, 'addNewFolder'])->name('library.newfolder');
         Route::post('/library/move', [LibraryController::class, 'move'])->name('library.movefolder');
         Route::post('/library/rename', [LibraryController::class, 'rename'])->name('library.rename');
         Route::post('/library/duplicate/', [LibraryController::class, 'duplicate'])->name('library.duplicate');

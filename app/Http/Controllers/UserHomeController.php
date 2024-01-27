@@ -23,7 +23,7 @@ class UserHomeController extends Controller
     public function page()
     {
 
-        $quizzes = DB::table('quiz_details')->get();
+        $quizzes = DB::table('quiz_details')->orderBy('updated_at', 'desc')->get();
         return Inertia::render(('UserHome'), [
             'quizzesData' => $quizzes,
             'pageTitle' => 'Create Quiz'

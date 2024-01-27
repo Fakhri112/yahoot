@@ -10,21 +10,29 @@ import { LibraryProvider } from "@/Components/context/LibraryContext";
 import { QuizPanel } from "./MainPanel/QuizPanel";
 import LibraryModal from "./Modal/LibraryModal";
 import { EmptyFolder } from "./MainPanel/EmptyFolder";
+import { Head } from "@inertiajs/react";
+import RecentPanel from "./MainPanel/RecentPanel";
 
-const Index = ({ auth, pageTitle }) => {
+const Index = ({ auth, pageTitle, folderId, path, recent }) => {
     return (
         <>
             <div className="h-screen bg-white overflow-hidden">
+                <Head title={pageTitle} />
                 <NavBar />
                 <ProfileSidebar />
-                <LibraryProvider auth={auth}>
+                <LibraryProvider
+                    recent={recent}
+                    auth={auth}
+                    folderId={folderId}
+                    path={path}
+                >
                     <LeftSideFolder />
                     <LibraryModal />
                     <RightSideMainPanel>
-                        <Navigation />
+                        {recent ? <RecentPanel /> : <Navigation />}
+                        <QuizSelect />
                         <EmptyFolder>
-                            <FolderList />
-                            <QuizSelect />
+                            {recent ? null : <FolderList />}
                             <QuizPanel />
                         </EmptyFolder>
                     </RightSideMainPanel>

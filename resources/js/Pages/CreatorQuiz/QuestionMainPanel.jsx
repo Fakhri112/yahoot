@@ -1,13 +1,13 @@
 import {
-    useCreateQuizDispatch,
-    useCreateQuizState,
-} from "@/Components/context/CreateQuizContext";
+    useCreatorQuizDispatch,
+    useCreatorQuizState,
+} from "@/Components/context/CreatorQuizContext";
 import { Menu } from "@headlessui/react";
 import { Circle, Rhombus, Square, Triangle } from "@/Components/svg/Shape";
 
 export const QuestionMainPanel = () => {
-    const dispatch = useCreateQuizDispatch();
-    const { modal, questionData, selectedQuestion } = useCreateQuizState();
+    const dispatch = useCreatorQuizDispatch();
+    const { modal, questionData, selectedQuestion } = useCreatorQuizState();
 
     const filteredItems = questionData.filter(
         (item) => item.id === selectedQuestion
@@ -73,7 +73,7 @@ export const QuestionMainPanel = () => {
         }
         dispatch({ type: "UPDATE_QUESTION_DATA", payload: [...QuestionCopy] });
     };
-    const handleQuestionDuration = (e) => {
+    const handleQuestionTitleAndDuration = (e) => {
         const QuestionCopy = JSON.parse(JSON.stringify(questionData));
 
         for (let index = 0; index < QuestionCopy.length; index++) {
@@ -117,7 +117,7 @@ md:col-span-10 md:row-[span_7_/_span_7] md:w-full md:h-full"
                         className="w-full drop-shadow-lg border-none text-center self-stretch"
                         type="text"
                         id="questionData"
-                        onChange={handleQuestionDuration}
+                        onChange={handleQuestionTitleAndDuration}
                         placeholder="Enter Title"
                         value={value.question}
                     />
@@ -200,11 +200,11 @@ md:col-span-10 md:row-[span_7_/_span_7] md:w-full md:h-full"
                         </div>
                         <select
                             value={value.duration}
-                            onChange={handleQuestionDuration}
+                            onChange={handleQuestionTitleAndDuration}
                             id="duration"
                             className="border-0 rounded"
                         >
-                            <option value={0} disabled defaultValue={true}>
+                            <option value={""} disabled defaultValue={true}>
                                 Duration
                             </option>
                             <option value={20}>20 Sec</option>

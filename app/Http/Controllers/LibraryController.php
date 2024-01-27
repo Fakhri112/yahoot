@@ -26,69 +26,61 @@ class LibraryController extends Controller
     }
     public function pageWithId(Request $request, $id)
     {
-        $path = DB::select(
-            "WITH RECURSIVE FolderHierarchy AS (
-            SELECT * FROM folders WHERE id = ? AND user_id = ?
-            UNION ALL
-            SELECT folders.* FROM folders
-            JOIN FolderHierarchy ON CAST(folders.id AS text) = FolderHierarchy.parent_folder
-          )
-          SELECT id, folder_name FROM FolderHierarchy WHERE parent_folder IS NOT NULL
-          UNION
-          SELECT id, folder_name FROM FolderHierarchy 
-          ORDER BY id",
-            [
-                $id,
-                $request->user()->id
-            ]
-        );
 
+        $path = $this->getPathDirectory($id, auth()->user()->id);
 
-
-        return Inertia::render(('Library/IndexWithId'), [
-            'pageTitle' => 'My Library',
+        return Inertia::render(('Library/Index'), [
+            'pageTitle' => end($path)->folder_name,
             'folderId' => $id,
             'path' => $path,
         ]);
     }
+
+    public function pageRecent()
+    {
+        return Inertia::render(('Library/Index'), [
+            'pageTitle' => 'Recent',
+            'recent' => true,
+        ]);
+    }
+
+
     public function getQuizzes(Request $request)
     {
 
+        $orderBy = $request->input('orderBy');
+        $offset = $request->input('offset');
+        $folderId = $request->input('folderId');
+        $limit = $request->input('limit');
+        $isRecentQuiz = $request->input('isRecentQuiz');
+        $search = $request->input('search');
         $quizzes = DB::table('quiz_details')
             ->where('user_id', $request->user()->id)
-            ->where('folder_id', $this->getRootFolderId($request->user()->id))
-            ->orderBy('quiz_name', 'asc')
-            ->get();
-        return $quizzes;
+            ->orderBy($orderBy[0], $orderBy[1])
+            ->offset($offset)
+            ->limit($limit);
+
+        if (!$isRecentQuiz) {
+            $quizzes = $quizzes->where('folder_id',  !$folderId ?
+                $this->getRootFolderId($request->user()->id) : $folderId);
+        }
+
+        if ($search != '') {
+            $quizzes = $quizzes->where('quiz_name', 'LIKE',  '%' . $search . '%');
+        }
+        $queryResult = $quizzes->get();
+        return $queryResult;
     }
     public function getFolders(Request $request)
     {
+        $folderId = $request->input('folderId');
         $folders = DB::table('folders')
-            ->where('parent_folder', $this->getRootFolderId($request->user()->id))
+            ->where('parent_folder', $folderId ? $folderId : $this->getRootFolderId($request->user()->id))
             ->orderBy('folder_name', 'asc')
             ->get();
         return $folders;
     }
 
-    public function getFoldersWithId(Request $request, $id)
-    {
-
-        $folders = DB::table('folders')
-            ->where('parent_folder', $id)
-            ->orderBy('folder_name', 'asc')
-            ->get();
-
-        return $folders;
-    }
-    public function getQuizzesWithId(Request $request, $id)
-    {
-        $quizzes = DB::table('quiz_details')
-            ->where('user_id', $request->user()->id)
-            ->where('folder_id', $id)
-            ->orderBy('quiz_name', 'asc')
-            ->get();
-        return $quizzes;
-    }
     public function getFullDirectory(Request $request)
     {
         $Folders = DB::table('folders')
@@ -109,22 +101,20 @@ class LibraryController extends Controller
         return $file_result[0];
     }
 
-    public function addNewFolder(Request $request, $parent_id)
+    public function addNewFolder(Request $request)
     {
         $request->validate([
             'newFolder' => 'required'
         ]);
 
-
+        $parent_id = $request->input('folderId');
         $folder = new Folder();
         $folder->folder_name = $request->input('newFolder');
-        $folder->parent_folder = ($parent_id == 'null')
+        $folder->parent_folder = !$parent_id
             ? $this->getRootFolderId($request->input('user_id'))
             : $parent_id;
         $folder->user_id = $request->input('user_id');
         $folder->save();
-
-
 
         return response()->json([
             'status' => 200,
@@ -133,16 +123,14 @@ class LibraryController extends Controller
     }
     public function move(Request $request)
     {
-
         $selectedQuizzes = $request->input('selectedQuizzes');
         $selectedFolder = $request->input('selectedFolder');
         $target_folder = $request->input('target_folder');
         if ($selectedQuizzes) {
             foreach ($selectedQuizzes as $selectedQuiz) {
-                QuizDetail::where('id', $selectedQuiz)
+                DB::table('quiz_details')->where('id', $selectedQuiz)
                     ->update([
                         'folder_id' => $target_folder,
-                        'updated_at' => Carbon::now()
                     ]);
             }
         }
@@ -150,7 +138,7 @@ class LibraryController extends Controller
             Folder::where('id', $selectedFolder)
                 ->update([
                     'parent_folder' => $target_folder,
-                    'updated_at' => Carbon::now()
+
                 ]);
         }
 
@@ -162,7 +150,6 @@ class LibraryController extends Controller
 
     public function rename(Request $request)
     {
-
         $type = $request->input('type');
         $id = $request->input('id');
         $name = $request->input('name');
@@ -245,11 +232,32 @@ class LibraryController extends Controller
             }
         }
 
-
         return response()->json([
             'status' => 200,
             'message' => 'Success',
         ]);
+    }
+
+    public function getPathDirectory($folderId, $userId)
+    {
+        $path = DB::select(
+            "WITH RECURSIVE FolderHierarchy AS (
+            SELECT * FROM folders WHERE id = ? AND user_id = ?
+            UNION ALL
+            SELECT folders.* FROM folders
+            JOIN FolderHierarchy ON CAST(folders.id AS text) = FolderHierarchy.parent_folder
+          )
+          SELECT id, folder_name FROM FolderHierarchy WHERE parent_folder IS NOT NULL
+          UNION
+          SELECT id, folder_name FROM FolderHierarchy 
+          ORDER BY id",
+            [
+                $folderId,
+                $userId
+            ]
+        );
+
+        return $path;
     }
 
     private function duplicateQuiz($data = [], $pathId, $quiz_id)
@@ -260,8 +268,6 @@ class LibraryController extends Controller
             $quiz = DB::table('quiz_details')
                 ->where('id', $quiz_id)
                 ->get()->first();
-
-
             $data = json_decode(json_encode($quiz), true);
         }
         $quiz_questions_db = DB::table('quiz_questions')
@@ -533,7 +539,6 @@ class LibraryController extends Controller
             $assignQuiz[0] = Backtrack_Algorithm($result, $quiz);
             $result = $assignQuiz;
         }
-
         return ($assignQuiz);
     }
 }

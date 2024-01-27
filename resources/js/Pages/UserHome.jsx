@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ProfilePicture from "../Components/svg/ProfilePicture";
 import ProfileSidebar from "@/Components/ProfileSidebar";
 import NavBar from "@/Components/NavBar";
 import CardQuiz from "@/Components/CardQuiz";
-import { useForm } from "@inertiajs/react";
+import toast, { Toaster } from "react-hot-toast";
 
-const user_home = ({ auth, quizzesData }) => {
+const user_home = ({ auth, quizzesData, flash }) => {
     const user = auth.user;
+
+    useEffect(() => {
+        if (flash.message) {
+            toast.success(flash.message);
+        }
+    }, [flash]);
+
     return (
         <>
+            <Toaster />
             <div className="h-screen bg-white overflow-hidden">
                 <NavBar />
                 <ProfileSidebar />
-                <main className="h-[89%] bg-slate-50 p-4 m-0 pb-24 md:ml-24">
+                <main className="h-[89%] bg-slate-50 p-4 m-0 pb-24 md:pb-0 md:ml-24">
                     <div className="h-full px-4 overflow-y-auto">
                         <div
                             className="flex justify-between mb-6 flex-col items-center

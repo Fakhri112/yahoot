@@ -24,14 +24,11 @@ export const NewFolder = () => {
         const payload = {
             newFolder: newFolderName,
             user_id: user.id,
+            folderId: folderId ? folderId : false,
         };
         SetSubmitting(true);
-        let url = `/user/library/new-folder/${
-            folderId ? `${folderId}` : "null"
-        }`;
-
         axios
-            .post(url, payload, {
+            .post("/user/library/new-folder/", payload, {
                 headers: {
                     "X-Xsrf-Token": user.xsrf,
                 },
@@ -39,7 +36,9 @@ export const NewFolder = () => {
             .then(function (response) {
                 SetSubmitting(false);
                 handleClose();
-
+                dispatch({
+                    type: "SHOW_SUCCESS_NOTIFICATION",
+                });
                 if (folderId) {
                     return dispatch({
                         type: "RELOAD_FOLDERS_DATA",

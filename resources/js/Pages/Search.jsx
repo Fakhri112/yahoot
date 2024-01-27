@@ -32,10 +32,10 @@ const QuizReport = () => {
                         </div>
                     </div>
                     <div className="text-slate-900 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-4">
+                        {/* <CardQuiz />
                         <CardQuiz />
                         <CardQuiz />
-                        <CardQuiz />
-                        <CardQuiz />
+                        <CardQuiz /> */}
                     </div>
                 </main>
             </div>

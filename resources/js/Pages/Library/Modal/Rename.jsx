@@ -8,7 +8,7 @@ import { Spinner } from "@/Components/svg/Spinner";
 import axios from "axios";
 
 export const Rename = () => {
-    const { modal, user, folderId, rename } = useLibraryState();
+    const { modal, user, folderId, rename, quizQuery } = useLibraryState();
     const dispatch = useLibraryDispatch();
     const [submitting, SetSubmitting] = useState(false);
 
@@ -61,10 +61,20 @@ export const Rename = () => {
             .then(function (response) {
                 SetSubmitting(false);
                 handleClose();
-
+                dispatch({
+                    type: "SHOW_SUCCESS_NOTIFICATION",
+                });
                 if (payload.type == "quiz") {
-                    return dispatch({
+                    dispatch({
                         type: "RELOAD_QUIZZES_DATA",
+                    });
+                    return dispatch({
+                        type: "UPDATE_QUIZ_QUERY_DATA",
+                        payload: {
+                            ...quizQuery,
+                            offset: 5,
+                            stopFetch: false,
+                        },
                     });
                 }
                 if (payload.type == "folder") {
@@ -83,8 +93,6 @@ export const Rename = () => {
                 console.log(error);
             });
     };
-
-    console.log(modal);
 
     return (
         <ReactModal

@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const LibraryState = createContext();
 const LibraryDispatch = createContext();
@@ -12,10 +13,13 @@ export const useLibraryDispatch = () => {
     return useContext(LibraryDispatch);
 };
 
-export const LibraryProvider = ({ children, auth, folderId, path }) => {
+export const LibraryProvider = ({ children, auth, folderId, path, recent }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
+    const { quizQuery, reload, notification } = state;
     const user = auth.user;
 
+    //STORE PATH DATA AND FOLDER ID WHEN FOLDER ID IS DEFINED IN URL
+    //STORE DEFAULT LOGGED USER DATA
     useEffect(() => {
         if (folderId) {
             dispatch({
@@ -27,6 +31,7 @@ export const LibraryProvider = ({ children, auth, folderId, path }) => {
                 payload: folderId,
             });
         }
+        if (recent) dispatch({ type: "IS_RECENT_QUIZ" });
         user.xsrf = document.cookie.replace("XSRF-TOKEN=", "");
         dispatch({
             type: "UPDATE_USER_DATA",
@@ -34,45 +39,104 @@ export const LibraryProvider = ({ children, auth, folderId, path }) => {
         });
     }, []);
 
+    //SET DEFAULT ORDER BY QUERY OF QUIZ DETAIL DATA
     useEffect(() => {
-        axios.get("/user/library/folders").then((response) => {
+        dispatch({
+            type: "UPDATE_QUIZ_QUERY_DATA",
+            payload: {
+                ...quizQuery,
+                orderBy: recent ? ["updated_at", "desc"] : ["quiz_name", "asc"],
+            },
+        });
+    }, []);
+
+    //GET FOLDER INSIDE ROOT FOLDER
+    useEffect(() => {
+        axios.post("/user/library/folders").then((response) => {
             dispatch({
                 type: "UPDATE_MYDRIVE_FOLDERS_DATA",
                 payload: response.data,
             });
-
             if (!folderId) {
                 dispatch({
                     type: "UPDATE_FOLDERS_DATA",
                     payload: response.data,
                 });
+                dispatch({
+                    type: "UPDATE_FETCH_FOLDERS",
+                    payload: false,
+                });
             }
         });
-    }, [state.reload.myDrive]);
+    }, [reload.myDrive]);
 
-    useEffect(() => {
-        let url = `/user/library${folderId ? "/" + folderId : ""}/quizzes`;
-
-        axios.get(url).then((response) => {
-            dispatch({
-                type: "UPDATE_QUIZZES_DATA",
-                payload: response.data,
-            });
-        });
-    }, [state.reload.quizzes]);
-
+    //GET FOLDER WITH CORRESPOND ID
     useEffect(() => {
         if (folderId) {
             axios
-                .get("/user/library/" + folderId + "/folders")
+                .post("/user/library/folders", { folderId: folderId })
                 .then((response) => {
                     dispatch({
                         type: "UPDATE_FOLDERS_DATA",
                         payload: response.data,
                     });
+                    dispatch({
+                        type: "UPDATE_FETCH_FOLDERS",
+                        payload: false,
+                    });
                 });
         }
-    }, [state.reload.folders]);
+    }, [reload.folders]);
+
+    //GET QUIZ DETAIL DATA
+    useEffect(() => {
+        if (quizQuery.orderBy.length == 0) return;
+        dispatch({
+            type: "UPDATE_QUIZZES_DATA",
+            payload: [],
+        });
+        let url = `/user/library/quizzes`;
+        let payload = {
+            offset: 0,
+            orderBy: quizQuery.orderBy,
+            limit: 5,
+            search: quizQuery.search,
+            folderId: folderId ? folderId : false,
+            isRecentQuiz: recent,
+        };
+
+        axios.post(url, payload).then(async (response) => {
+            dispatch({
+                type: "UPDATE_FETCH_QUIZZES",
+                payload: false,
+            });
+
+            if (response.data.length == 0) {
+                dispatch({
+                    type: "UPDATE_QUIZ_QUERY_DATA",
+                    payload: {
+                        ...quizQuery,
+                        stopFetch: true,
+                    },
+                });
+                return;
+            }
+            return dispatch({
+                type: "UPDATE_QUIZZES_DATA",
+                payload: [...response.data],
+            });
+        });
+    }, [quizQuery.orderBy, quizQuery.search, reload.quizzes]);
+
+    //NOTIFICATION
+    useEffect(() => {
+        if (notification.success) {
+            toast.success("Success");
+            dispatch({
+                type: "SHOW_SUCCESS_NOTIFICATION",
+            });
+        }
+    }, [notification.success]);
 
     // useEffect(() => {
     //     Echo.channel("library").listen("LibraryWebsocket", (e) => {
@@ -88,6 +152,7 @@ export const LibraryProvider = ({ children, auth, folderId, path }) => {
                 md:grid-cols-[minmax(80px,_120px)_repeat(11,_minmax(0,_1fr))]
                 "
                 >
+                    <Toaster />
                     {children}
                 </main>
             </LibraryDispatch.Provider>
@@ -100,6 +165,24 @@ export const stateList = {
     quizzesData: [],
     selectedQuizzes: [],
     selectedFolder: "",
+    myDriveFolders: [],
+    foldersData: [],
+
+    fetchFolders: true,
+    fetchQuizzes: true,
+
+    quizQuery: {
+        orderBy: [],
+        offset: 5,
+        limit: 5,
+        stopFetch: false,
+        search: "",
+    },
+
+    notification: {
+        success: false,
+        failed: false,
+    },
     status: {
         isDuplicate: false,
         isMove: false,
@@ -123,9 +206,8 @@ export const stateList = {
         quizzes: 1,
     },
     folderId: null,
+    isRecentQuiz: false,
     path: [],
-    myDriveFolders: [],
-    foldersData: [],
 };
 
 const initialState = { ...stateList };
@@ -141,7 +223,13 @@ const reducer = (state, action) => {
             return { ...state, selectedQuizzes: action.payload };
         case "UPDATE_SELECTED_FOLDER":
             return { ...state, selectedFolder: action.payload };
-        case "TOGGLE_BULK_SELECT":
+        case "UPDATE_QUIZ_QUERY_DATA":
+            return { ...state, quizQuery: action.payload };
+        case "UPDATE_FETCH_QUIZZES":
+            return { ...state, fetchQuizzes: action.payload };
+        case "UPDATE_FETCH_FOLDERS":
+            return { ...state, fetchFolders: action.payload };
+        case "UPDATE_BULK_SELECT":
             return { ...state, bulkSelect: action.payload };
         case "UPDATE_STATUS_DATA":
             return { ...state, status: action.payload };
@@ -158,6 +246,17 @@ const reducer = (state, action) => {
         case "UPDATE_RENAME_DATA":
             return { ...state, rename: action.payload };
 
+        case "IS_RECENT_QUIZ":
+            return { ...state, isRecentQuiz: true };
+
+        case "SHOW_SUCCESS_NOTIFICATION":
+            return {
+                ...state,
+                notification: {
+                    ...state.notification,
+                    success: !state.notification.success,
+                },
+            };
         case "RELOAD_FOLDERS_DATA":
             return {
                 ...state,

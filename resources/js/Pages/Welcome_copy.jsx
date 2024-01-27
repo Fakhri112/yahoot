@@ -1,15 +1,12 @@
-import React, { lazy, Suspense } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
-const MoveTo = lazy(() => import("./Library/Modal/Directory"));
+const notify = () => toast.success("Here is your toast.");
 
 const App = () => {
     return (
         <div>
-            <Suspense fallback={<div>Loading...</div>}>
-                <MoveTo />
-            </Suspense>
+            <button onClick={notify}>Make me a toast</button>
         </div>
     );
 };
-
 export default App;

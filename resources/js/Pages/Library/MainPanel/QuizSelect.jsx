@@ -5,7 +5,7 @@ import {
 
 export const QuizSelect = () => {
     const dispatch = useLibraryDispatch();
-    const { quizzesData, selectedQuizzes, bulkSelect, modal } =
+    const { quizzesData, selectedQuizzes, bulkSelect, modal, status } =
         useLibraryState();
 
     const handleSelectAll = (e) => {
@@ -14,7 +14,7 @@ export const QuizSelect = () => {
             allCheckboxIds = quizzesData.map((item) => item.id);
 
         if (allCheckboxIds.length == 0)
-            dispatch({ type: "TOGGLE_BULK_SELECT", payload: false });
+            dispatch({ type: "UPDATE_BULK_SELECT", payload: false });
 
         return dispatch({
             type: "UPDATE_SELECTED_QUIZZES_DATA",
@@ -23,6 +23,10 @@ export const QuizSelect = () => {
     };
 
     const handleMove = () => {
+        dispatch({
+            type: "UPDATE_STATUS_DATA",
+            payload: { ...status, isMove: true },
+        });
         return dispatch({
             type: "UPDATE_MODAL",
             payload: {
@@ -33,6 +37,10 @@ export const QuizSelect = () => {
     };
 
     const handleDelete = () => {
+        dispatch({
+            type: "UPDATE_STATUS_DATA",
+            payload: { ...status, isDeletion: true },
+        });
         return dispatch({
             type: "UPDATE_MODAL",
             payload: {
@@ -62,7 +70,7 @@ export const QuizSelect = () => {
                             Select All
                         </label>
                     </div>
-                    <p className="font-bold text-slate-100">
+                    <p className="font-bold text-slate-100 hidden sm:block">
                         {selectedQuizzes.length} Selected
                     </p>
                     <div>

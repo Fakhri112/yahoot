@@ -23,17 +23,20 @@ class QuizDetailController extends Controller
     public function page(Request $request, $id)
     {
 
-        $quiz = DB::table('quiz_details')->where('id', $id)->get();
-        if (count($quiz) == 0) {
+        try {
+            $quiz = DB::table('quiz_details')->where('id', $id)->get();
+            if (count($quiz) == 0) {
+            }
+            $questions = DB::table('quiz_questions')->where('quiz_detail_id', $id)->get();
+            // dd($questions);
+
+            return Inertia::render('QuizDetail/Index', [
+                'title' => $quiz[0]->quiz_name,
+                'quiz' => $quiz[0],
+                'questions' => $questions
+            ]);
+        } catch (\Throwable $th) {
             return redirect('404');
         }
-        $questions = DB::table('quiz_questions')->where('quiz_detail_id', $id)->get();
-        // dd($questions);
-
-        return Inertia::render('QuizDetail', [
-            'title' => $quiz[0]->quiz_name,
-            'quiz' => $quiz[0],
-            'questions' => $questions
-        ]);
     }
 }

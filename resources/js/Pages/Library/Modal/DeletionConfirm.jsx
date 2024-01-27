@@ -7,8 +7,14 @@ import React, { useState } from "react";
 import ReactModal from "react-modal";
 
 const DeletionConfirm = () => {
-    const { modal, selectedQuizzes, user, selectedFolder, folderId } =
-        useLibraryState();
+    const {
+        modal,
+        selectedQuizzes,
+        user,
+        selectedFolder,
+        folderId,
+        quizQuery,
+    } = useLibraryState();
     const dispatch = useLibraryDispatch();
     const [submitting, SetSubmitting] = useState(false);
 
@@ -56,23 +62,34 @@ const DeletionConfirm = () => {
                     "X-Xsrf-Token": user.xsrf,
                 },
             })
-            .then(function (response) {
+            .then(async function (response) {
                 SetSubmitting(false);
                 handleClose();
+                dispatch({
+                    type: "SHOW_SUCCESS_NOTIFICATION",
+                });
                 if (selectedQuizzes.length > 0) {
                     dispatch({
                         type: "RELOAD_QUIZZES_DATA",
                     });
+                    return dispatch({
+                        type: "UPDATE_QUIZ_QUERY_DATA",
+                        payload: {
+                            ...quizQuery,
+                            offset: 5,
+                            stopFetch: false,
+                        },
+                    });
                 }
                 if (selectedFolder != "") {
                     if (folderId) {
-                        dispatch({
+                        return dispatch({
                             type: "RELOAD_FOLDERS_DATA",
                         });
-                    } else
-                        dispatch({
-                            type: "RELOAD_MYDRIVE_DATA",
-                        });
+                    }
+                    return dispatch({
+                        type: "RELOAD_MYDRIVE_DATA",
+                    });
                 }
             })
             .catch(function (error) {

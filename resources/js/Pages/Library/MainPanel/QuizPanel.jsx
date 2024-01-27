@@ -1,11 +1,13 @@
 import ProfilePicture from "@/Components/svg/ProfilePicture";
 import { Link } from "@inertiajs/react";
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     useLibraryDispatch,
     useLibraryState,
 } from "@/Components/context/LibraryContext";
 import { LibraryDropdown } from "@/Components/dropdown/LibraryDropdown";
+import { Spinner } from "@/Components/svg/Spinner";
+import axios from "axios";
 
 export const QuizPanel = () => {
     const {
@@ -15,9 +17,12 @@ export const QuizPanel = () => {
         modal,
         rename,
         status,
-        deletion,
+        quizQuery,
+        folderId,
+        isRecentQuiz,
     } = useLibraryState();
     const dispatch = useLibraryDispatch();
+    const loading = useRef();
 
     const handleCheck = (quiz_id) => {
         let selectedQuizCopy = JSON.parse(JSON.stringify(selectedQuizzes));
@@ -25,12 +30,15 @@ export const QuizPanel = () => {
             selectedQuizCopy.splice(selectedQuizCopy.indexOf(quiz_id), 1);
         } else {
             selectedQuizCopy.push(quiz_id);
-            dispatch({ type: "TOGGLE_BULK_SELECT", payload: true });
+            dispatch({ type: "UPDATE_BULK_SELECT", payload: true });
         }
-        return dispatch({
+        dispatch({
             type: "UPDATE_SELECTED_QUIZZES_DATA",
             payload: selectedQuizCopy,
         });
+        if (selectedQuizCopy.length == 0) {
+            dispatch({ type: "UPDATE_BULK_SELECT", payload: false });
+        }
     };
 
     const handleMove = (e) => {
@@ -103,6 +111,61 @@ export const QuizPanel = () => {
         });
     };
 
+    const fetchMoreQuiz = useCallback(async () => {
+        if (quizzesData.length == 0) return;
+        let url = `/user/library/quizzes`;
+
+        let payload = {
+            offset: quizQuery.offset,
+            orderBy: quizQuery.orderBy,
+            limit: quizQuery.limit,
+            folderId: folderId ? folderId : false,
+            isRecentQuiz: isRecentQuiz,
+            search: quizQuery.search,
+        };
+
+        let response = await axios.post(url, payload);
+        if (response.data.length == 0) {
+            dispatch({
+                type: "UPDATE_QUIZ_QUERY_DATA",
+                payload: {
+                    ...quizQuery,
+                    stopFetch: true,
+                },
+            });
+            return;
+        }
+        dispatch({
+            type: "UPDATE_QUIZ_QUERY_DATA",
+            payload: {
+                ...quizQuery,
+                offset: quizQuery.offset + 5,
+            },
+        });
+        return dispatch({
+            type: "UPDATE_QUIZZES_DATA",
+            payload: [...quizzesData, ...response.data],
+        });
+    }, [quizzesData, quizQuery.search]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        if (quizQuery.stopFetch) return;
+                        fetchMoreQuiz();
+                    }
+                });
+            },
+            { threshold: 0.75 }
+        );
+        observer.observe(loading.current);
+        return () => {
+            observer.disconnect();
+        };
+    });
+
     return (
         <>
             {quizzesData.map(({ id, quiz_name, thumbnail }, index) => (
@@ -152,11 +215,14 @@ export const QuizPanel = () => {
                                 </div>
                             </div>
                             <div className="flex items-center px-2">
-                                <p>0 Plays</p>
-                                <button className="mx-2 font-semibold rounded bg-slate-300 px-3 py-1">
+                                <p className="hidden sm:block">0 Plays</p>
+                                <Link
+                                    href={"/edit/" + id}
+                                    className="mx-2 btn-secondary px-3 py-1"
+                                >
                                     Edit
-                                </button>
-                                <button className="font-semibold text-slate-200 rounded bg-blue-700 px-3 py-1">
+                                </Link>
+                                <button className="btn-primary px-3 py-1">
                                     Start
                                 </button>
                             </div>
@@ -164,6 +230,15 @@ export const QuizPanel = () => {
                     </div>
                 </div>
             ))}
+
+            <div
+                className={`flex justify-center ${
+                    quizQuery.stopFetch ? "hidden" : ""
+                }`}
+                ref={loading}
+            >
+                <Spinner />
+            </div>
         </>
     );
 };

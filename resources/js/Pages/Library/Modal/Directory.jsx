@@ -10,14 +10,21 @@ import axios from "axios";
 import { Spinner } from "@/Components/svg/Spinner";
 
 const Directory = () => {
-    const { modal, selectedQuizzes, user, selectedFolder, folderId, status } =
-        useLibraryState();
+    const {
+        modal,
+        selectedQuizzes,
+        user,
+        selectedFolder,
+        folderId,
+        status,
+        quizQuery,
+    } = useLibraryState();
     const dispatch = useLibraryDispatch();
     const [fullDirectory, SetFullDirectory] = useState([]);
     const { folderConfig } = useFolderTreeContext();
     const [submitting, SetSubmitting] = useState(false);
 
-    const handleToggleDirectory = () => {
+    const handleClose = () => {
         handleResetData();
         return dispatch({
             type: "UPDATE_MODAL",
@@ -61,6 +68,8 @@ const Directory = () => {
             payload.selectedQuizzes = selectedQuizzes;
         if (selectedFolder != "") payload.selectedFolder = selectedFolder;
 
+        console.log(status);
+
         let url = status.isMove
             ? "/user/library/move"
             : status.isDuplicate
@@ -75,24 +84,33 @@ const Directory = () => {
             })
             .then(function (response) {
                 SetSubmitting(false);
-
+                handleClose();
+                dispatch({
+                    type: "SHOW_SUCCESS_NOTIFICATION",
+                });
                 if (selectedQuizzes.length != 0) {
                     dispatch({
                         type: "RELOAD_QUIZZES_DATA",
                     });
+                    return dispatch({
+                        type: "UPDATE_QUIZ_QUERY_DATA",
+                        payload: {
+                            ...quizQuery,
+                            offset: 5,
+                            stopFetch: false,
+                        },
+                    });
                 }
                 if (selectedFolder != "") {
                     if (folderId) {
-                        dispatch({
+                        return dispatch({
                             type: "RELOAD_FOLDERS_DATA",
                         });
-                    } else
-                        dispatch({
-                            type: "RELOAD_MYDRIVE_DATA",
-                        });
+                    }
+                    return dispatch({
+                        type: "RELOAD_MYDRIVE_DATA",
+                    });
                 }
-
-                handleToggleDirectory();
             })
             .catch(function (error) {
                 SetSubmitting(false);
@@ -115,7 +133,7 @@ const Directory = () => {
             isOpen={modal.open_directory}
             shouldCloseOnOverlayClick={true}
             appElement={document.getElementById("app")}
-            onRequestClose={handleToggleDirectory}
+            onRequestClose={handleClose}
             className="relative rounded w-[70%] h-[86%] p-3 bg-white flex flex-col"
             overlayClassName="absolute inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
         >
@@ -129,7 +147,7 @@ const Directory = () => {
                 </p>
                 {submitting ? <Spinner classname={"w-5 "} /> : <></>}
             </div>
-            <div className="h-full border border-slate-400 rounded p-1">
+            <div className="h-full overflow-y-auto border border-slate-400 rounded p-1">
                 {fullDirectory.length != 0 ? (
                     <RecursiveFileExplorer
                         node={fullDirectory}
