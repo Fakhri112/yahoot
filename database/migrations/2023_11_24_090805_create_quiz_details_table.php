@@ -15,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('quiz_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('quiz_name');
+            $table->string('quiz_title');
             $table->string('visibility');
             $table->string('quiz_description', 2048);
             $table->string('thumbnail');
-            $table->string('total_players');
+            $table->integer('total_players');
+            $table->integer('total_plays');
             $table->foreignUuid('user_id')->constrained();
             $table->foreignUuid('folder_id')->constrained();
             $table->timestamps();

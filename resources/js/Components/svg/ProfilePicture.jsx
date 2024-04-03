@@ -1,13 +1,11 @@
-import { usePage } from "@inertiajs/react";
 import React from "react";
 
-const ProfilePicture = ({ tabIndex, className }) => {
-    const user = usePage().props.auth.user;
+const ProfilePicture = ({ tabIndex, className, profilePic }) => {
     return (
         <>
-            {user.profile_pic ? (
+            {profilePic ? (
                 <img
-                    src={user.profile_pic}
+                    src={profilePic}
                     alt=""
                     className={className + " rounded-full mx-1"}
                 />

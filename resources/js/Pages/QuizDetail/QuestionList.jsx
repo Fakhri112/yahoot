@@ -11,6 +11,7 @@ export const QuestionList = ({ questions }) => {
             {questions.map((question, index) => (
                 <Disclosure
                     as="div"
+                    key={index}
                     className="bg-base-200 rounded-none border shadow-lg mb-2"
                 >
                     <Disclosure.Button

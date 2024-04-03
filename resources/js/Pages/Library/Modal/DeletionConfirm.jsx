@@ -3,18 +3,14 @@ import {
     useLibraryState,
 } from "@/Components/context/LibraryContext";
 import { Spinner } from "@/Components/svg/Spinner";
+import axios from "axios";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import ReactModal from "react-modal";
 
 const DeletionConfirm = () => {
-    const {
-        modal,
-        selectedQuizzes,
-        user,
-        selectedFolder,
-        folderId,
-        quizQuery,
-    } = useLibraryState();
+    const { modal, selectedQuizzes, selectedFolder, folderId, quizQuery } =
+        useLibraryState();
     const dispatch = useLibraryDispatch();
     const [submitting, SetSubmitting] = useState(false);
 
@@ -40,7 +36,7 @@ const DeletionConfirm = () => {
         });
     };
 
-    const handleNewFolder = () => {
+    const handleDeletion = () => {
         SetSubmitting(true);
         const payload = {};
 
@@ -57,17 +53,11 @@ const DeletionConfirm = () => {
 
         let url = `/user/library/delete/`;
         axios
-            .post(url, payload, {
-                headers: {
-                    "X-Xsrf-Token": user.xsrf,
-                },
-            })
+            .put(url, payload)
             .then(async function (response) {
                 SetSubmitting(false);
                 handleClose();
-                dispatch({
-                    type: "SHOW_SUCCESS_NOTIFICATION",
-                });
+                toast.success("Success");
                 if (selectedQuizzes.length > 0) {
                     dispatch({
                         type: "RELOAD_QUIZZES_DATA",
@@ -104,7 +94,7 @@ const DeletionConfirm = () => {
             shouldCloseOnOverlayClick={true}
             appElement={document.getElementById("app")}
             onRequestClose={handleClose}
-            className="relative rounded w-[33%] p-3 bg-white flex flex-col"
+            className="relative rounded  md:w-[40%] w-[80%]  p-3 bg-white flex flex-col"
             overlayClassName="absolute inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
         >
             <div className="flex items-center justify-between">
@@ -113,13 +103,13 @@ const DeletionConfirm = () => {
             </div>
             <p className=" text-lg">
                 Are you sure you want to delete this{" "}
-                {selectedFolder == "" ? "folder" : "quiz"}?
+                {selectedFolder != "" ? "folder" : "quiz"}?
             </p>
             <div className="flex mt-2 justify-center gap-x-2 items-center">
-                <button className="btn-primary p-2 " onClick={handleNewFolder}>
-                    Submit
+                <button className="btn-danger p-2 " onClick={handleDeletion}>
+                    Delete
                 </button>
-                <button className="btn-danger p-2 " onClick={handleClose}>
+                <button className="btn-secondary p-2 " onClick={handleClose}>
                     Cancel
                 </button>
             </div>

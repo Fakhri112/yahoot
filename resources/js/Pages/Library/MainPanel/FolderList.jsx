@@ -83,7 +83,7 @@ export const FolderList = () => {
 
     return (
         <>
-            <div className="grid grid-cols-2 md:grid-cols-4 drop-shadow-md py-2 gap-2">
+            <div className="grid grid-cols-2 items-center md:grid-cols-4 drop-shadow-md py-2 gap-2">
                 {foldersData.length !== 0 ? (
                     foldersData.map((data, index) => (
                         <div key={index}>
@@ -92,7 +92,7 @@ export const FolderList = () => {
                                     href={"/user/library/" + data.id}
                                     className="flex items-center gap-x-2  w-full"
                                 >
-                                    <Folder className="fill-slate-500" />
+                                    <Folder className="fill-slate-500 min-w-8 " />
                                     {data.folder_name}
                                 </Link>
                                 <LibraryDropdown

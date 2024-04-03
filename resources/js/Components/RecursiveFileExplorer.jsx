@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
-import { useFolderTreeContext } from "./context/FolderTree";
+import {
+    useFolderTreeState,
+    useFolderTreeDispatch,
+} from "./context/FolderTreeContext";
 import { Folder, File } from "./svg/FileExplorer";
 
 const RecursiveFileExplorer = ({ node, onAddFolder, directory }) => {
-    const { folderConfig, setFolderConfig } = useFolderTreeContext();
+    const { folderConfig } = useFolderTreeState();
+    const SetFolderConfig = useFolderTreeDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [insertNewFolder, SetinsertNewFolder] = useState(false);
     const [newFolderName, setNewFolderName] = useState("");
@@ -17,7 +21,7 @@ const RecursiveFileExplorer = ({ node, onAddFolder, directory }) => {
     const handleToggle = () => {
         if (node.type == "quiz") return;
         setIsOpen(!isOpen);
-        setFolderConfig({
+        SetFolderConfig({
             ...folderConfig,
             folderOpenName: node.name,
             folderId: node.id,

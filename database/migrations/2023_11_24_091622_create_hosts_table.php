@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('hosts', function (Blueprint $table) {
 
             $table->string('game_pin')->primary();
-            $table->string('status');
+            $table->foreignUuid('quiz_detail_id')->constrained();
             $table->timestamps();
         });
     }

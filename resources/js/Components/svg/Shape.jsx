@@ -1,9 +1,9 @@
-const Rhombus = (props) => {
+const Rhombus = ({ className }) => {
     return (
         <svg
             viewBox="0 0 24.00 24.00"
             fill="none"
-            className={props.className}
+            className={className}
             xmlns="http://www.w3.org/2000/svg"
         >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
@@ -26,12 +26,12 @@ const Rhombus = (props) => {
     );
 };
 
-const Triangle = (props) => {
+const Triangle = ({ className }) => {
     return (
         <svg
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
-            className={props.className}
+            className={className}
         >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g
@@ -46,9 +46,9 @@ const Triangle = (props) => {
     );
 };
 
-const Circle = (props) => {
+const Circle = ({ className }) => {
     return (
-        <svg viewBox="0 0 512 512" className={props.className}>
+        <svg viewBox="0 0 512 512" className={className}>
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g
                 id="SVGRepo_tracerCarrier"
@@ -71,12 +71,12 @@ const Circle = (props) => {
     );
 };
 
-const Square = (props) => {
+const Square = ({ className }) => {
     return (
         <svg
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
-            className={props.className}
+            className={className}
         >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g

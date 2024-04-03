@@ -15,6 +15,7 @@ class QuizDetail extends Model
         'quiz_description',
         'thumbnail',
         'total_players',
+        'total_plays',
         'user_id',
         'folder_id'
     ];

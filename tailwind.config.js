@@ -1,5 +1,5 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
-
+const plugin = require("tailwindcss/plugin");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
@@ -17,10 +17,27 @@ module.exports = {
             },
         },
     },
-
-    daisyui: {
-        themes: ["light", "emerald"],
-    },
-
-    plugins: [require("tailwindcss-animated"), require("@tailwindcss/forms")],
+    plugins: [
+        require("@tailwindcss/forms"),
+        plugin(function ({ matchUtilities, theme }) {
+            matchUtilities(
+                {
+                    "animate-duration": (value) => ({
+                        animationDuration: value,
+                    }),
+                },
+                { values: theme("transitionDuration") }
+            );
+        }),
+        plugin(function ({ matchUtilities, theme }) {
+            matchUtilities(
+                {
+                    "text-shadow": (value) => ({
+                        textShadow: value,
+                    }),
+                },
+                { values: theme("textShadow") }
+            );
+        }),
+    ],
 };

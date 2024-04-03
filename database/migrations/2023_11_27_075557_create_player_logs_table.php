@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('player_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('answered');
+            $table->string('answered')->nullable();
             $table->boolean('correct_incorrect');
-            $table->float('time');
+            $table->float('time')->nullable();
             $table->integer('points');
-            $table->foreignId('quiz_question_id')->constrained();
-            $table->foreignId('player_result_id')->constrained();
+            $table->foreignId('quiz_question_for_report_id')->constrained();
+            $table->foreignUuid('player_summary_result_id')->constrained();
             $table->timestamps();
         });
     }

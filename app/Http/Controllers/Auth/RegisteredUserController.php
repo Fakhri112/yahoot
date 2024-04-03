@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Folder;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\File;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'alpha_dash'],
+            'name' => ['required', 'string', 'max:255', 'alpha_dash', 'unique:' . User::class],
             'email' => 'required|string|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -47,23 +47,20 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // DB::table('folders')->insert([
-        //     'folder_name' => "My Drive",
-        //     'parent_folder' => NULL,
-        //     'user_id' => $user->id
-        // ]);
-
         $folders = new Folder();
         $folders->folder_name = "My Drive";
         $folders->parent_folder = NULL;
         $folders->user_id = $user->id;
         $folders->save();
 
+        File::makeDirectory(public_path() . '/user_quiz/' . $user->id);
+        File::makeDirectory(public_path() . '/report_quiz/' . $user->id);
+
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect('/user/' . $user->id);
     }
 }

@@ -27,7 +27,7 @@ const ImageCropper = ({
                 0
             );
 
-            let base64image = croppedImage.toDataURL("image/jpeg");
+            let base64image = croppedImage.toDataURL("image/jpeg", 0.4);
             SetCroppedImage({ image: base64image });
         } catch (e) {
             console.error(e);
@@ -41,7 +41,7 @@ const ImageCropper = ({
                 shouldCloseOnOverlayClick={true}
                 appElement={document.getElementById("app")}
                 onRequestClose={() => SetCropModal(!cropModal)}
-                className="rounded bg-white w-[70%] h-[77%] p-3"
+                className="rounded bg-white md:w-[60%] w-[85%] min-w-[320px] h-[92%] p-3"
                 overlayClassName="fixed border border-blue-800 inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
             >
                 <div className="w-full h-[90%] border border-red-900">

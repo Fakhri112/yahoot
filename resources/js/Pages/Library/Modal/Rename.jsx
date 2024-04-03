@@ -5,10 +5,11 @@ import {
 } from "@/Components/context/LibraryContext";
 import ReactModal from "react-modal";
 import { Spinner } from "@/Components/svg/Spinner";
+import toast from "react-hot-toast";
 import axios from "axios";
 
 export const Rename = () => {
-    const { modal, user, folderId, rename, quizQuery } = useLibraryState();
+    const { modal, folderId, rename, quizQuery } = useLibraryState();
     const dispatch = useLibraryDispatch();
     const [submitting, SetSubmitting] = useState(false);
 
@@ -45,6 +46,12 @@ export const Rename = () => {
     };
 
     const handleRename = () => {
+        if (
+            (rename.name.length > 18 && rename.type == "folder") ||
+            (rename.name.length > 50 && rename.type == "quiz")
+        )
+            return alert("Dude why you edit the HTML LOL!!");
+
         const payload = {
             name: rename.name,
             type: rename.type,
@@ -53,17 +60,11 @@ export const Rename = () => {
         SetSubmitting(true);
         let url = `/user/library/rename/`;
         axios
-            .post(url, payload, {
-                headers: {
-                    "X-Xsrf-Token": user.xsrf,
-                },
-            })
+            .patch(url, payload)
             .then(function (response) {
                 SetSubmitting(false);
                 handleClose();
-                dispatch({
-                    type: "SHOW_SUCCESS_NOTIFICATION",
-                });
+                toast.success("Success");
                 if (payload.type == "quiz") {
                     dispatch({
                         type: "RELOAD_QUIZZES_DATA",
@@ -100,7 +101,7 @@ export const Rename = () => {
             shouldCloseOnOverlayClick={true}
             appElement={document.getElementById("app")}
             onRequestClose={handleClose}
-            className="relative rounded w-[33%] h-40 p-3 bg-white flex flex-col"
+            className="relative rounded  md:w-[40%] w-[80%]  h-40 p-3 bg-white flex flex-col"
             overlayClassName="absolute inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
         >
             <div className="flex items-center justify-between">
@@ -108,6 +109,7 @@ export const Rename = () => {
                 {submitting ? <Spinner classname={"w-5 "} /> : <></>}
             </div>
             <input
+                maxLength={rename.type == "folder" ? 18 : 50}
                 type="text"
                 className="rounded"
                 placeholder="Enter the Name"
@@ -118,7 +120,7 @@ export const Rename = () => {
                 <button className="btn-primary p-2 " onClick={handleRename}>
                     Submit
                 </button>
-                <button className="btn-danger p-2 " onClick={handleClose}>
+                <button className="btn-secondary p-2 " onClick={handleClose}>
                     Cancel
                 </button>
             </div>

@@ -5,6 +5,7 @@ import {
 } from "@/Components/context/LibraryContext";
 import ReactModal from "react-modal";
 import { Spinner } from "@/Components/svg/Spinner";
+import toast from "react-hot-toast";
 import axios from "axios";
 
 export const NewFolder = () => {
@@ -21,6 +22,8 @@ export const NewFolder = () => {
     };
 
     const handleNewFolder = () => {
+        if (newFolderName.length > 18)
+            return alert("Dude why you edit the HTML LOL!!");
         const payload = {
             newFolder: newFolderName,
             user_id: user.id,
@@ -28,17 +31,11 @@ export const NewFolder = () => {
         };
         SetSubmitting(true);
         axios
-            .post("/user/library/new-folder/", payload, {
-                headers: {
-                    "X-Xsrf-Token": user.xsrf,
-                },
-            })
+            .post("/user/library/new-folder/", payload)
             .then(function (response) {
                 SetSubmitting(false);
                 handleClose();
-                dispatch({
-                    type: "SHOW_SUCCESS_NOTIFICATION",
-                });
+                toast.success("Success");
                 if (folderId) {
                     return dispatch({
                         type: "RELOAD_FOLDERS_DATA",
@@ -60,7 +57,7 @@ export const NewFolder = () => {
             shouldCloseOnOverlayClick={true}
             appElement={document.getElementById("app")}
             onRequestClose={handleClose}
-            className="relative rounded w-[33%] h-40 p-3 bg-white flex flex-col"
+            className="relative rounded  md:w-[40%] w-[80%]  h-40 p-3 bg-white flex flex-col"
             overlayClassName="absolute inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
         >
             <div className="flex items-center justify-between">
@@ -68,6 +65,7 @@ export const NewFolder = () => {
                 {submitting ? <Spinner classname={"w-5 "} /> : <></>}
             </div>
             <input
+                maxLength={18}
                 type="text"
                 className="rounded"
                 placeholder="New Folder"
@@ -77,7 +75,7 @@ export const NewFolder = () => {
                 <button className="btn-primary p-2 " onClick={handleNewFolder}>
                     Submit
                 </button>
-                <button className="btn-danger p-2 " onClick={handleClose}>
+                <button className="btn-secondary p-2 " onClick={handleClose}>
                     Cancel
                 </button>
             </div>

@@ -11,13 +11,13 @@ import { QuizPanel } from "./MainPanel/QuizPanel";
 import LibraryModal from "./Modal/LibraryModal";
 import { EmptyFolder } from "./MainPanel/EmptyFolder";
 import { Head } from "@inertiajs/react";
-import RecentPanel from "./MainPanel/RecentPanel";
+import SearchPanel from "./MainPanel/SearchPanel";
 
-const Index = ({ auth, pageTitle, folderId, path, recent }) => {
+const Index = ({ auth, pageTitle, folderId, path, recent, favorites }) => {
     return (
         <>
             <div className="h-screen bg-white overflow-hidden">
-                <Head title={pageTitle} />
+                <Head title={pageTitle + " - "} />
                 <NavBar />
                 <ProfileSidebar />
                 <LibraryProvider
@@ -25,14 +25,22 @@ const Index = ({ auth, pageTitle, folderId, path, recent }) => {
                     auth={auth}
                     folderId={folderId}
                     path={path}
+                    favorites={favorites}
                 >
                     <LeftSideFolder />
                     <LibraryModal />
                     <RightSideMainPanel>
-                        {recent ? <RecentPanel /> : <Navigation />}
+                        {recent || favorites ? (
+                            <SearchPanel
+                                recent={recent}
+                                favorites={favorites}
+                            />
+                        ) : (
+                            <Navigation />
+                        )}
                         <QuizSelect />
                         <EmptyFolder>
-                            {recent ? null : <FolderList />}
+                            {recent || favorites ? null : <FolderList />}
                             <QuizPanel />
                         </EmptyFolder>
                     </RightSideMainPanel>

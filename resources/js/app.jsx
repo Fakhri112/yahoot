@@ -9,7 +9,7 @@ const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "Yahoot";
 
 createInertiaApp({
-    title: (title) => `${title} - ${"Yahoot"}`,
+    title: (title) => `${title}${"Yahoot"}`,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,

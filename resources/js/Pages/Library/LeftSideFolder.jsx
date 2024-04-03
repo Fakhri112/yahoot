@@ -19,7 +19,7 @@ export const LeftSideFolder = () => {
                 <p>Recent</p>
             </Link>
             <Link
-                href="/user/library/favorite"
+                href="/user/library/favorites"
                 className="flex px-2 items-center gap-x-1 rounded cursor-pointer hover:bg-slate-200"
             >
                 <p className="text-3xl text-slate-500">&#9733;</p>

@@ -1,13 +1,15 @@
 import React from "react";
-import ProfilePicture from "@/Components/svg/ProfilePicture";
 import { Link } from "@inertiajs/react";
-import { Menu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
-import NavDropdown from "./NavDropdown";
+import NavDropdown from "./dropdown/NavDropdown";
 
-const NavBar = () => {
+const NavBar = ({ className }) => {
     return (
-        <nav className="z-10 shadow-md py-3 px-5 relative w-full flex justify-between items-center">
+        <nav
+            className={
+                "z-10 shadow-md py-3 px-5 relative w-full flex justify-between items-center " +
+                className
+            }
+        >
             <div className="flex items-center gap-x-16">
                 <Link
                     href="/"
@@ -20,7 +22,7 @@ const NavBar = () => {
                 <Link href="/create" className="btn-primary py-2 px-3 ">
                     Create
                 </Link>
-                <Link href="/browse" className="btn-success py-2 px-3 ">
+                <Link href="/browse" className="btn-primary py-2 px-3 ">
                     Browse
                 </Link>
                 <NavDropdown />

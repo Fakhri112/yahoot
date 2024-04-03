@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\Favorite;
 use App\Models\Folder;
+use App\Models\Host;
 use App\Models\QuizDetail;
 use App\Models\QuizQuestion;
 use Carbon\Carbon;
@@ -44,6 +45,15 @@ class LibraryController extends Controller
         ]);
     }
 
+    public function pageFavorites()
+    {
+
+        return Inertia::render(('Library/Index'), [
+            'pageTitle' => 'Favorites',
+            'favorites' => true,
+        ]);
+    }
+
 
     public function getQuizzes(Request $request)
     {
@@ -66,7 +76,7 @@ class LibraryController extends Controller
         }
 
         if ($search != '') {
-            $quizzes = $quizzes->where('quiz_name', 'LIKE',  '%' . $search . '%');
+            $quizzes = $quizzes->where('quiz_title', 'iLIKE',  '%' . $search . '%');
         }
         $queryResult = $quizzes->get();
         return $queryResult;
@@ -74,9 +84,10 @@ class LibraryController extends Controller
     public function getFolders(Request $request)
     {
         $folderId = $request->input('folderId');
+        $orderBy = $request->input('orderBy');
         $folders = DB::table('folders')
             ->where('parent_folder', $folderId ? $folderId : $this->getRootFolderId($request->user()->id))
-            ->orderBy('folder_name', 'asc')
+            ->orderBy($orderBy[0], $orderBy[1])
             ->get();
         return $folders;
     }
@@ -89,7 +100,7 @@ class LibraryController extends Controller
             ->get();
 
         $quizzes = DB::table('quiz_details')
-            ->select('id', 'quiz_name', 'folder_id')
+            ->select('id', 'quiz_title', 'folder_id')
             ->whereIn('folder_id', $Folders->pluck('id'))
             ->get();
 
@@ -157,7 +168,7 @@ class LibraryController extends Controller
         if ($type == 'quiz') {
             QuizDetail::where('id', $id)
                 ->update([
-                    'quiz_name' => $name,
+                    'quiz_title' => $name,
                     'updated_at' => Carbon::now()
                 ]);
         }
@@ -274,26 +285,27 @@ class LibraryController extends Controller
             ->where('quiz_detail_id', $data['id'])->get();
 
         preg_match(
-            '/\/user_quiz\/(\w+)\/thumbnail\.jpg/',
+            '/\/user_quiz\/' . auth()->user()->id . '\/(\w+)\/thumbnail\.jpg/',
             $data['thumbnail'],
             $thumbnail
         );
 
-        $directory_path = '/user_quiz/' .  bin2hex(random_bytes(8));
-        $sourceFolder = public_path() . '/user_quiz/' . $thumbnail[1];
+        $directory_path = '/user_quiz/' . auth()->user()->id . '/' .  bin2hex(random_bytes(8));
+        $sourceFolder = public_path() . '/user_quiz/' . auth()->user()->id . '/' . $thumbnail[1];
         $destinationFolder = public_path() . $directory_path;
 
         File::makeDirectory($destinationFolder);
         $this->duplicateUserQuizImage($sourceFolder, $destinationFolder);
 
-        $quiz_name = $quiz_id ? 'Duplicate of ' . $data['quiz_name'] : $data['name'];
+        $quiz_title = $quiz_id ? 'Duplicate of ' . $data['quiz_title'] : $data['name'];
 
         $quiz_detail = new QuizDetail();
-        $quiz_detail->quiz_name = $quiz_name;
+        $quiz_detail->quiz_title = $quiz_title;
         $quiz_detail->quiz_description = $data['quiz_description'];
         $quiz_detail->visibility = $data['visibility'];
         $quiz_detail->thumbnail = $directory_path . '/thumbnail.jpg';
         $quiz_detail->total_players = 0;
+        $quiz_detail->total_plays = 0;
         $quiz_detail->user_id = auth()->user()->id;
         $quiz_detail->folder_id = $pathId;
         $quiz_detail->save();
@@ -330,18 +342,21 @@ class LibraryController extends Controller
         }
         $datas = json_decode(json_encode($quizzes), true);
         foreach ($datas as $data) {
+            Favorite::where('quiz_detail_id',  $data['id'])->delete();
+            Host::where('quiz_detail_id',  $data['id'])->delete();
             preg_match(
-                '/\/user_quiz\/(\w+)\/thumbnail\.jpg/',
+                '/\/user_quiz\/' . auth()->user()->id . '\/(\w+)\/thumbnail\.jpg/',
                 $data['thumbnail'],
                 $thumbnail
             );
 
-            $sourceFolder = public_path() . '/user_quiz/' . $thumbnail[1];
-            $this->deleteUserQuizImage($sourceFolder);
+            $sourceFolder = public_path() . '/user_quiz/' . auth()->user()->id . '/' . $thumbnail[1];
+            $this->deleteImageFolder($sourceFolder);
             QuizQuestion::where('quiz_detail_id',  $data['id'])->delete();
             $quiz = QuizDetail::findOrFail($data['id']);
             $quiz->delete();
         }
+
         return true;
     }
 
@@ -387,7 +402,7 @@ class LibraryController extends Controller
         return true;
     }
 
-    private function deleteUserQuizImage($folderPath)
+    private function deleteImageFolder($folderPath)
     {
         if (!is_dir($folderPath)) {
             return false; // Not a directory, nothing to delete
@@ -400,7 +415,7 @@ class LibraryController extends Controller
 
                 if (is_dir($filePath)) {
                     // Recursive call to delete subfolder
-                    $this->deleteUserQuizImage($filePath);
+                    $this->deleteImageFolder($filePath);
                 } else {
                     unlink($filePath); // Delete file
                 }
@@ -468,7 +483,7 @@ class LibraryController extends Controller
             if (optional($item)->parent_folder == $parentId || ($parentId === null && optional($item)->parent_folder === null)) {
                 $formattedItem = [
                     'id' => optional($item)->id,
-                    'name' => optional($item)->folder_name ?? optional($item)->quiz_name,
+                    'name' => optional($item)->folder_name ?? optional($item)->quiz_title,
                     'type' => 'folder'
                 ];
 
@@ -514,7 +529,7 @@ class LibraryController extends Controller
 
                     $insertData = [
                         'id' => optional($quiz)->id,
-                        'name' => optional($quiz)->quiz_name,
+                        'name' => optional($quiz)->quiz_title,
                         'visibility' => optional($quiz)->visibility,
                         'quiz_description' => optional($quiz)->quiz_description,
                         'thumbnail' => optional($quiz)->thumbnail,

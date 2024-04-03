@@ -4,7 +4,7 @@ const Folder = ({ className }) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            height="2em"
+            width={"2em"}
             viewBox="0 0 512 512"
             className={className}
         >

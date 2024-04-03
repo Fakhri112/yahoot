@@ -3,17 +3,17 @@ import {
     useLibraryDispatch,
     useLibraryState,
 } from "@/Components/context/LibraryContext";
-import { useFolderTreeContext } from "@/Components/context/FolderTree";
+import { useFolderTreeState } from "@/Components/context/FolderTreeContext";
 import RecursiveFileExplorer from "@/Components/RecursiveFileExplorer";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Spinner } from "@/Components/svg/Spinner";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Directory = () => {
     const {
         modal,
         selectedQuizzes,
-        user,
         selectedFolder,
         folderId,
         status,
@@ -21,7 +21,7 @@ const Directory = () => {
     } = useLibraryState();
     const dispatch = useLibraryDispatch();
     const [fullDirectory, SetFullDirectory] = useState([]);
-    const { folderConfig } = useFolderTreeContext();
+    const { folderConfig } = useFolderTreeState();
     const [submitting, SetSubmitting] = useState(false);
 
     const handleClose = () => {
@@ -68,26 +68,19 @@ const Directory = () => {
             payload.selectedQuizzes = selectedQuizzes;
         if (selectedFolder != "") payload.selectedFolder = selectedFolder;
 
-        console.log(status);
+        let sendData = axios;
 
-        let url = status.isMove
-            ? "/user/library/move"
+        status.isMove
+            ? (sendData = sendData.patch("/user/library/move", payload))
             : status.isDuplicate
-            ? "/user/library/duplicate"
+            ? (sendData = sendData.post("/user/library/duplicate", payload))
             : null;
 
-        axios
-            .post(url, payload, {
-                headers: {
-                    "X-Xsrf-Token": user.xsrf,
-                },
-            })
+        sendData
             .then(function (response) {
                 SetSubmitting(false);
                 handleClose();
-                dispatch({
-                    type: "SHOW_SUCCESS_NOTIFICATION",
-                });
+                toast.success("Success");
                 if (selectedQuizzes.length != 0) {
                     dispatch({
                         type: "RELOAD_QUIZZES_DATA",
@@ -134,7 +127,7 @@ const Directory = () => {
             shouldCloseOnOverlayClick={true}
             appElement={document.getElementById("app")}
             onRequestClose={handleClose}
-            className="relative rounded w-[70%] h-[86%] p-3 bg-white flex flex-col"
+            className="relative rounded md:w-[50%] w-[90%] min-w-[320px] h-[92%] p-3 bg-white flex flex-col"
             overlayClassName="absolute inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
         >
             <div className="flex justify-between">
@@ -159,7 +152,7 @@ const Directory = () => {
                     </div>
                 )}
             </div>
-            <div className="flex gap-x-2 py-2">
+            <div className="flex gap-x-2 py-2 justify-between">
                 <button
                     onClick={handleSelectFolder}
                     className={`${
@@ -169,6 +162,9 @@ const Directory = () => {
                     } px-3 py-2`}
                 >
                     Select Folder
+                </button>
+                <button onClick={handleClose} className="btn-danger px-2 py-2">
+                    Close
                 </button>
             </div>
         </ReactModal>

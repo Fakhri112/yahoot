@@ -1,11 +1,10 @@
-import NavDropdown from "@/Components/NavDropdown";
-import { Link, Head } from "@inertiajs/react";
+import NavDropdown from "@/Components/dropdown/NavDropdown";
+import { Link } from "@inertiajs/react";
 
 export default function Welcome({ auth, title }) {
     return (
         <>
-            <Head title={title} />
-            <nav className="py-3 px-5 absolute  w-full flex justify-between">
+            <nav className="py-3 px-5 absolute  w-full flex justify-between items-center">
                 <div>
                     <h4 className="font-josefin font-semibold text-2xl text-slate-200">
                         Yahoot!
@@ -31,9 +30,9 @@ export default function Welcome({ auth, title }) {
                     </div>
                 )}
             </nav>
-            <main className="bg-violet-600 h-screen grid place-items-center">
+            <main className="bg-violet-700 h-screen grid place-items-center">
                 <div className="text-center">
-                    <h1 className="text-9xl font-josefin text-white font-bold">
+                    <h1 className="lg:text-9xl md:text-8xl text-7xl font-josefin text-white font-bold">
                         Yahoot!
                     </h1>
                     <p className="text-md font-medium text-slate-200">
@@ -42,16 +41,16 @@ export default function Welcome({ auth, title }) {
                     <div className="mt-8">
                         <Link
                             href="browse"
-                            className="font-semibold text-slate-200 me-5 bg-sky-800 p-3 rounded"
+                            className="font-semibold text-slate-100 me-5 bg-blue-600 p-3 hover:bg-blue-700 rounded"
                         >
                             Browse Game
                         </Link>
-                        <Link
+                        <a
                             href="play"
-                            className="font-semibold bg-teal-100 p-3 rounded"
+                            className="font-semibold bg-teal-100 hover:bg-slate-300 p-3 rounded"
                         >
                             Join the Game
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </main>

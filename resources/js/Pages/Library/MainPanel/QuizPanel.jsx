@@ -7,7 +7,9 @@ import {
 } from "@/Components/context/LibraryContext";
 import { LibraryDropdown } from "@/Components/dropdown/LibraryDropdown";
 import { Spinner } from "@/Components/svg/Spinner";
-import axios from "axios";
+import FavoriteIcon from "@/Components/svg/FavoriteIcon";
+import toast from "react-hot-toast";
+import { cloneDeep } from "lodash";
 
 export const QuizPanel = () => {
     const {
@@ -20,12 +22,13 @@ export const QuizPanel = () => {
         quizQuery,
         folderId,
         isRecentQuiz,
+        isFavoritesQuiz,
     } = useLibraryState();
     const dispatch = useLibraryDispatch();
     const loading = useRef();
 
     const handleCheck = (quiz_id) => {
-        let selectedQuizCopy = JSON.parse(JSON.stringify(selectedQuizzes));
+        let selectedQuizCopy = cloneDeep(selectedQuizzes);
         if (selectedQuizCopy.includes(quiz_id)) {
             selectedQuizCopy.splice(selectedQuizCopy.indexOf(quiz_id), 1);
         } else {
@@ -111,10 +114,17 @@ export const QuizPanel = () => {
         });
     };
 
+    const handleRemoveFavorite = async (e) => {
+        let response = await axios.delete("/favorites/" + e.target.id);
+        toast.success(response.data.message);
+        return dispatch({
+            type: "RELOAD_QUIZZES_DATA",
+        });
+    };
+
     const fetchMoreQuiz = useCallback(async () => {
         if (quizzesData.length == 0) return;
-        let url = `/user/library/quizzes`;
-
+        let url = isFavoritesQuiz ? "/favorites" : `/user/library/quizzes`;
         let payload = {
             offset: quizQuery.offset,
             orderBy: quizQuery.orderBy,
@@ -168,68 +178,132 @@ export const QuizPanel = () => {
 
     return (
         <>
-            {quizzesData.map(({ id, quiz_name, thumbnail }, index) => (
-                <div
-                    key={index}
-                    className="flex h-28 sm:h-32 md:h-32 border border-slate-300 shadow-lg rounded bg-white mb-4 "
-                >
-                    <div className="flex items-center border">
-                        <input
-                            className="m-2"
-                            type="checkbox"
-                            checked={
-                                selectedQuizzes.includes(id) &&
-                                Array.isArray(selectedQuizzes)
-                            }
-                            onChange={() => handleCheck(id)}
-                        />
-                        <img
-                            className="hidden sm:block md:block h-full"
-                            src={thumbnail}
-                        />
-                    </div>
-
-                    <div className="flex flex-col justify-between flex-1">
-                        <div className="flex items-center justify-between">
-                            <Link
-                                href={"/detail/" + id}
-                                className="py-2 px-3 text-xl hover:text-blue-900"
-                            >
-                                <b>{quiz_name}</b>
-                            </Link>
-                            <LibraryDropdown
-                                id={id}
-                                name={quiz_name}
-                                moveClick={handleMove}
-                                renameClick={handleRename}
-                                duplicateClick={handleDuplicate}
-                                deleteClick={handleDeletion}
+            {quizzesData.map(
+                (
+                    {
+                        id,
+                        quiz_title,
+                        total_plays,
+                        thumbnail,
+                        name,
+                        quiz_detail_id,
+                        user_id,
+                        profile_pic,
+                    },
+                    index
+                ) => (
+                    <div
+                        key={index}
+                        className="flex h-28 sm:h-32 md:h-32 border border-slate-300 shadow-lg rounded bg-white mb-4 "
+                    >
+                        <div className="flex items-center border">
+                            <input
+                                className={`m-2 ${name ? "hidden" : ""}`}
+                                type="checkbox"
+                                checked={
+                                    selectedQuizzes.includes(id) &&
+                                    Array.isArray(selectedQuizzes)
+                                }
+                                onChange={() => handleCheck(id)}
+                            />
+                            <img
+                                className="hidden sm:block md:block h-full"
+                                src={thumbnail}
                             />
                         </div>
 
-                        <div className="flex justify-between px-2 py-1">
-                            <div className="flex items-center">
-                                <ProfilePicture className="h-8" />
-                                <div>
-                                    <p className="text-sm">{user.name}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center px-2">
-                                <p className="hidden sm:block">0 Plays</p>
+                        <div className="flex flex-col justify-between flex-1">
+                            <div className="flex items-center justify-between">
                                 <Link
-                                    href={"/edit/" + id}
-                                    className="mx-2 btn-secondary px-3 py-1"
+                                    href={
+                                        quiz_detail_id
+                                            ? "/detail/" + quiz_detail_id
+                                            : "/detail/" + id
+                                    }
+                                    className="py-2 px-3 md:text-xl text-md hover:text-blue-900"
                                 >
-                                    Edit
+                                    <b>{quiz_title}</b>
                                 </Link>
-                                <button className="btn-primary px-3 py-1">
-                                    Start
-                                </button>
+                                {!quiz_detail_id ? (
+                                    <LibraryDropdown
+                                        id={id}
+                                        name={quiz_title}
+                                        moveClick={handleMove}
+                                        renameClick={handleRename}
+                                        duplicateClick={handleDuplicate}
+                                        deleteClick={handleDeletion}
+                                    />
+                                ) : (
+                                    <p className="mx-2">{total_plays} Plays</p>
+                                )}
+                            </div>
+
+                            <div className="flex justify-between px-2 py-1">
+                                <div className="flex items-center">
+                                    <ProfilePicture
+                                        profilePic={
+                                            !quiz_detail_id
+                                                ? user.profile_pic
+                                                : profile_pic
+                                        }
+                                        className="h-8"
+                                    />
+                                    <div>
+                                        <Link
+                                            href={"/user/" + user_id}
+                                            className="no-underline hover:underline text-sm"
+                                        >
+                                            {name ?? user.name}
+                                        </Link>
+                                    </div>
+                                </div>
+                                <div className="flex items-center px-2">
+                                    {!quiz_detail_id ? (
+                                        <>
+                                            <p className="hidden sm:block">
+                                                {total_plays} Plays
+                                            </p>
+                                            <Link
+                                                href={"/edit/" + id}
+                                                className="mx-2 btn-secondary px-3 py-1"
+                                            >
+                                                Edit
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <div
+                                            id={quiz_detail_id}
+                                            onClick={handleRemoveFavorite}
+                                            className="cursor-pointer flex items-center mx-2 gap-x-2 btn-secondary px-3 py-1"
+                                        >
+                                            <FavoriteIcon
+                                                starred={true}
+                                                className={
+                                                    "pointer-events-none"
+                                                }
+                                            />
+                                            <p className="sm:block hidden pointer-events-none">
+                                                Remove From Favorite
+                                            </p>
+                                        </div>
+                                    )}
+                                    <a
+                                        href={
+                                            quiz_detail_id
+                                                ? "/play/quizid=" +
+                                                  quiz_detail_id
+                                                : "/play/quizid=" + id
+                                        }
+                                        className="btn-primary px-3 py-1"
+                                    >
+                                        Start
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                )
+            )}
 
             <div
                 className={`flex justify-center ${

@@ -14,8 +14,7 @@ class PlayerLog extends Model
         'correct_incorrect',
         'time',
         'points',
-        'quiz_questions_id',
-        'player_result_id'
-
+        'quiz_questions_for_report_id',
+        'player_summary_result_id'
     ];
 }
