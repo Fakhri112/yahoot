@@ -46,20 +46,20 @@ DB_PASSWORD
 Installing JS dependencies
 
 ```bash
-    npm install
+npm install
 ```
 
 Set-Up Laravel Project
 
 ```bash
-    composer install
-    php artisan key:generate
-    php artisan migrate
+composer install
+php artisan key:generate
+php artisan migrate
 ```
 
 Running App
 
 ```bash
-    npm run dev
-    php artisan serve
+npm run dev
+php artisan serve
 ```
