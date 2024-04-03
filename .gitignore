@@ -1,6 +1,12 @@
 /node_modules
 /public/build
 /public/hot
+/public/profile_pic/*
+/public/report_quiz/*
+/public/user_quiz/*
+!/public/user_quiz/.gitkeep
+!/public/report_quiz/.gitkeep
+!/public/profile_pic/.gitkeep
 /public/storage
 /storage/*.key
 /vendor
