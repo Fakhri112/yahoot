@@ -61,7 +61,6 @@ export const HostProvider = ({ children, quiz, questions }) => {
         peer.on("connection", function (conn) {
             conn.on("open", function () {
                 conn.on("data", function (data) {
-                    console.log(data);
                     dispatch({
                         type: "GET_PLAYER_DATA",
                         payload: { ...data, peerData: conn, totalScore: 0 },
@@ -69,7 +68,6 @@ export const HostProvider = ({ children, quiz, questions }) => {
                 });
             });
             conn.on("close", function () {
-                console.log("close test");
                 dispatch({
                     type: "GET_PLAYER_DATA",
                     payload: { peerData: conn, type: "disconnected" },

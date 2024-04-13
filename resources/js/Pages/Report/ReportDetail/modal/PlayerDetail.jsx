@@ -201,7 +201,7 @@ const PlayerDetail = ({ open, playerId, SetClose }) => {
                         <tbody {...getTableBodyProps()}>
                             {rows.map((row, i) => {
                                 prepareRow(row);
-                                // console.log(row);
+
                                 return (
                                     <tr {...row.getRowProps()}>
                                         {row.cells.map((cell) => {

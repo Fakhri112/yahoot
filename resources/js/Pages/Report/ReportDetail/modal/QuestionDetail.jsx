@@ -334,7 +334,7 @@ const QuestionDetail = ({ open, questionId, SetClose }) => {
                                 <tbody {...getTableBodyProps()}>
                                     {rows.map((row, i) => {
                                         prepareRow(row);
-                                        // console.log(row);
+
                                         return (
                                             <tr {...row.getRowProps()}>
                                                 {row.cells.map((cell) => {

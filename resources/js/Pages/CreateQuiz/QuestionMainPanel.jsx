@@ -65,8 +65,6 @@ export const QuestionMainPanel = () => {
             return toast.error("Quiz must have at least 1 question");
         const QuestionCopy = JSON.parse(JSON.stringify(questionData));
 
-        console.log(QuestionCopy);
-
         const deletedQuestion = QuestionCopy.filter(
             (value) => filteredItems[0].id !== value.id
         );
@@ -87,7 +85,6 @@ export const QuestionMainPanel = () => {
         });
     };
 
-    console.log(answerCount);
     const handleFormAnswer = (e) => {
         const QuestionCopy = JSON.parse(JSON.stringify(questionData));
 

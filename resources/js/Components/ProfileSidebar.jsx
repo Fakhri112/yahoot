@@ -8,8 +8,8 @@ const ProfileSidebar = () => {
     return (
         <div
             className="shadow-top bg-white text-slate-900 z-50
-            flex justify-around  absolute w-full h-auto pb-0 p-2 bottom-0 
-            md:fixed md:w-24 md:h-full md:flex-col md:justify-start md:bottom-[unset] md:shadow-end md:z-0
+            flex justify-around  w-full h-auto pb-0 p-2 bottom-0 
+            fixed md:w-24 md:h-full md:flex-col md:justify-start md:bottom-[unset] md:shadow-end md:z-0
             "
         >
             <Link

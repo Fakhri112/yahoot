@@ -88,7 +88,6 @@ export const PlayerProvider = ({ children }) => {
                         data.type != "questionCountdownTime" &&
                         data.type != "questionOnScreenTime"
                     ) {
-                        console.log(data);
                         SetDoubleTrigger(Math.floor(Math.random() * 80000));
                     }
                 });
@@ -245,17 +244,17 @@ export const PlayerProvider = ({ children }) => {
                     className="bg-cover bg-violet-800 h-screen grid  grid-rows-[1fr]"
                 >
                     {loadingOverlay ? (
-                        <div className="absolute inset-0 z-20 grid place-items-center">
+                        <div className="absolute h-screen inset-0 z-20 grid place-items-center">
                             <Spinner
                                 classname={"absolute z-50 h-16 fill-slate-800"}
                             />
-                            <div className=" bg-white z-10 inset-0  absolute opacity-50"></div>
+                            <div className=" bg-white z-10 inset-0 h-screen absolute opacity-50"></div>
                         </div>
                     ) : null}
 
                     {pin.valid ? (
                         <div
-                            className={`absolute inset-0 -z-9 ${
+                            className={`absolute h-screen inset-0 -z-9 ${
                                 thumbnailBg
                                     ? "bg-black opacity-50"
                                     : "bg-blue-800"

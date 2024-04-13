@@ -25,8 +25,6 @@ const QuestionCountdown = () => {
         }
     }, [time]);
 
-    //  console.log(currentQuestion);
-
     return (
         <>
             {showCountdownPanel.question ? (

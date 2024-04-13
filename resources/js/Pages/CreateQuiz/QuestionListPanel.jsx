@@ -36,8 +36,8 @@ export const QuestionListPanel = () => {
                 axis={width < 768 ? "x" : "y"}
                 onReorder={handleDrag}
                 values={questionData}
-                className="z-50 absolute bottom-0 border border-slate-400
-            flex overflow-y-auto w-full list-decimal bg-slate-200 flex custom-scroll
+                className="z-50 fixed bottom-0 border border-slate-400
+            flex overflow-y-auto w-full list-decimal bg-slate-200 custom-scroll
             md:static md:bottom-[unset] md:flex-col md:w-auto md:h-full md:px-5 md:py-2 md:gap-2 gap-5 px-4 py-3"
             >
                 {questionData.map((item, index) => (

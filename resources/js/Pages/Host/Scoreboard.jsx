@@ -22,7 +22,6 @@ const Scoreboard = () => {
     const [startCounting, SetStartCounting] = useState(false);
 
     useEffect(() => {
-        // console.log(playersList);
         if (show.finalResult) return;
         if (playersList.length == playersTotalScoreList.length) return;
         if (
@@ -75,11 +74,6 @@ const Scoreboard = () => {
 
         countAnimation();
     }, [show.scoreBoard]);
-
-    useEffect(() => {
-        console.log(disconnectedPlayers);
-        console.log(JSON.stringify(playersResult));
-    }, [playersResult]);
 
     const handleNext = () => {
         const answerContainerCopy = cloneDeep(playersAnswerContainer);
