@@ -132,8 +132,7 @@ export const HostProvider = ({ children, quiz, questions }) => {
                     payload.status = "proceedToQuizCountdown";
                 }
 
-                if (showCountdownPanel.question)
-                    payload.status = "proceedToQuestionCountdown";
+                if (showCountdownPanel.question) payload.status = false;
                 if (show.currentQuestion && !show.answerGraph)
                     payload.status = "proceedToChoosingAnswer";
                 if (
@@ -145,11 +144,14 @@ export const HostProvider = ({ children, quiz, questions }) => {
                 }
             }
 
-            catchPlayerData.peerData.send({
-                type: "toggleThumbail",
-                status: thumbnailBg,
-            });
-            catchPlayerData.peerData.send(payload);
+            if (payload.status) {
+                catchPlayerData.peerData.send({
+                    type: "toggleThumbail",
+                    status: thumbnailBg,
+                });
+                catchPlayerData.peerData.send(payload);
+            }
+
             await sleep(200);
             return dispatch({
                 type: "UPDATE_PLAYERS_LIST",

@@ -2,23 +2,37 @@ const initialState = {
     questionData: [
         {
             id: 1,
-            question: "New Question",
-            duration: "",
+            question: "Hello?",
+            duration: 20,
 
             image_file: "",
             answer: {
-                A: "",
-                B: "",
-                C: "",
-                D: "",
+                A: "Hello",
+                B: "World",
+                C: "I",
+                D: "Love You",
             },
-            correct_answer: "",
+            correct_answer: "A",
+        },
+        {
+            id: 2,
+            question: "Node.js is",
+            duration: 15,
+            image_file: "",
+            answer: {
+                A: "JavaScript",
+                B: "Java",
+                C: "C",
+                D: "Go",
+            },
+            correct_answer: "A",
         },
     ],
     quizSetting: {
         id: 0,
-        quiz_title: "New Quiz",
-        quiz_description: "",
+        quiz_title: "Simple Quiz",
+        quiz_description:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         thumbnail: "",
         prev_thumbnail: "",
         visibility: "public",

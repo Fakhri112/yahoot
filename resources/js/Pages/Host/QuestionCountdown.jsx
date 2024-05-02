@@ -13,10 +13,13 @@ const QuestionCountdown = () => {
     const [showTitle, SetShowTitle] = useState(false);
     const [showProgressBar, SetShowProgressBar] = useState(false);
     const {
+        show,
         showCountdownPanel,
         questions,
         currentQuestionNumber,
         playersList,
+        catchPlayerData,
+        thumbnailBg,
     } = useHostState();
     const selectedQuestion = useMemo(() => {
         return questions[currentQuestionNumber];
@@ -53,17 +56,29 @@ const QuestionCountdown = () => {
     }, [showCountdownPanel.question]);
 
     useEffect(() => {
-        playersList.forEach((player) => {
-            player.peerData.send({
-                type: "questionCountdownTime",
-                data: time,
-            });
-        });
         if (time == 0) {
             dispatch({ type: "TOGGLE_SHOW_QUESTION_COUNTDOWN" });
             dispatch({ type: "TOGGLE_SHOW_CURRENT_QUESTION" });
         }
     }, [time]);
+
+    useEffect(() => {
+        if (!catchPlayerData) return;
+        let payload = {
+            status: "proceedToQuestionCountdown",
+            type: "connected",
+            questionData: questions[currentQuestionNumber],
+            questionNumber: currentQuestionNumber + 1,
+            time,
+        };
+        if (!show.waitingRoom && showCountdownPanel.question) {
+            catchPlayerData.peerData.send({
+                type: "toggleThumbail",
+                status: thumbnailBg,
+            });
+            catchPlayerData.peerData.send(payload);
+        }
+    }, [catchPlayerData]);
 
     return (
         <>

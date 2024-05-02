@@ -84,12 +84,6 @@ export const PlayerProvider = ({ children }) => {
                         type: "GET_HOST_DATA",
                         payload: { ...data, peerData: conn },
                     });
-                    if (
-                        data.type != "questionCountdownTime" &&
-                        data.type != "questionOnScreenTime"
-                    ) {
-                        SetDoubleTrigger(Math.floor(Math.random() * 80000));
-                    }
                 });
             });
             conn.on("close", function (err) {

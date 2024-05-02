@@ -2,21 +2,41 @@ import {
     usePlayerDispatch,
     usePlayerState,
 } from "@/Components/context/PlayerContext";
+import useTimeCountdown from "@/Components/hook/TimeCountdown";
+import { sleep } from "@/Lib/sleep";
 import React, { useEffect, useState } from "react";
 
 const DEFAULT_TIME = 4000;
 const QuestionCountdown = () => {
-    const [time, SetTime] = useState(DEFAULT_TIME);
+    const { time, SetTime, SetStartTime } = useTimeCountdown(DEFAULT_TIME);
     const { showCountdownPanel, catchHostData, currentQuestion } =
         usePlayerState();
     const dispatch = usePlayerDispatch();
 
     useEffect(() => {
-        if (!showCountdownPanel.question || !catchHostData) return;
-        SetTime(DEFAULT_TIME);
-        if (catchHostData?.type == "questionCountdownTime")
-            SetTime(catchHostData.data);
-    }, [showCountdownPanel.question, catchHostData]);
+        if (!showCountdownPanel.question) return;
+
+        const updateTime = async () => {
+            await sleep(980);
+            SetTime(DEFAULT_TIME);
+            SetStartTime(true);
+        };
+
+        if (
+            catchHostData?.type == "connected" &&
+            catchHostData.status == "proceedToQuestionCountdown"
+        ) {
+            const updateTimeMiddleGame = () => {
+                SetTime(catchHostData.time);
+                SetStartTime(true);
+            };
+            return updateTimeMiddleGame();
+        }
+
+        updateTime();
+    }, [showCountdownPanel.question]);
+
+    useEffect(() => {}, [catchHostData]);
 
     useEffect(() => {
         if (time == 0) {
@@ -30,7 +50,7 @@ const QuestionCountdown = () => {
             {showCountdownPanel.question ? (
                 <div className="relative flex flex-col items-center gap-5 h-full justify-center">
                     <p className="text-4xl font-bold text-white [text-shadow:0px_0px_3px_#000000]">
-                        Question {currentQuestion?.questionNumber ?? null}
+                        Question {currentQuestion?.questionNumber ?? ""}
                     </p>
 
                     <div className="relative grid place-items-center">
