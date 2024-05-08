@@ -222,19 +222,7 @@ export const HostProvider = ({ children, quiz, questions }) => {
                 })),
             });
         }
-        if (catchPlayerData?.type == "playerAnswerData") {
-            return dispatch({
-                type: "COLLECT_PLAYERS_ANSWER",
-                payload: [
-                    ...playersAnswerContainer,
-                    {
-                        ...catchPlayerData?.data,
-                        peerData: catchPlayerData.peerData,
-                    },
-                ],
-            });
-        }
-
+        if (catchPlayerData?.type == "playerAnswerData") return;
         updatePlayerList();
     }, [catchPlayerData]);
 

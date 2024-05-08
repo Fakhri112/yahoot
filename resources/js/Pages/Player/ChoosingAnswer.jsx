@@ -6,7 +6,7 @@ import {
 import { useEffect, useState } from "react";
 
 const ChoosingAnswer = () => {
-    const { show, currentQuestion, catchHostData } = usePlayerState();
+    const { show, currentQuestion } = usePlayerState();
     const dispatch = usePlayerDispatch();
     const [time, SetTime] = useState(null);
 
@@ -15,33 +15,10 @@ const ChoosingAnswer = () => {
         SetTime(currentQuestion.duration * 1000);
     }, [currentQuestion]);
 
-    useEffect(() => {
-        if (!show.choosingAnswer || !catchHostData) return;
-        if (catchHostData?.type == "questionOnScreenTime")
-            SetTime(catchHostData.data);
-    }, [show.choosingAnswer, catchHostData]);
-
-    useEffect(() => {
-        if (!show.choosingAnswer) return;
-        if (time == 0) {
-            dispatch({ type: "TOGGLE_SHOW_CHOOSING_ANSWER" });
-            dispatch({
-                type: "UPDATE_CHOOSED_ANSWER_DATA",
-                payload: {
-                    time: 0,
-                    defaultTime: currentQuestion.duration * 1000,
-                    answer: "timesup",
-                },
-            });
-        }
-    }, [time, show.choosedAnswer]);
-
     const handleAnswer = (e) => {
         dispatch({
             type: "UPDATE_CHOOSED_ANSWER_DATA",
             payload: {
-                time,
-                defaultTime: currentQuestion.duration * 1000,
                 answer: e.target.name,
             },
         });

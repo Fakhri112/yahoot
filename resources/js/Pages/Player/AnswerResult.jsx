@@ -17,74 +17,69 @@ const AnswerResult = () => {
         peer,
         username,
     } = usePlayerState();
-    const { time, defaultTime, answer } = choosedAnswer;
+    const { answer } = choosedAnswer;
     const dispatch = usePlayerDispatch();
     const [wrongAnswer, SetWrongAnswer] = useState(false);
     const [scoreOnScreen, SetScoreOnScreen] = useState(0);
+    const [timeResult, SetTimeResult] = useState(null);
 
     useEffect(() => {
         const getAnswerResult = async () => {
-            if (!time && !defaultTime && !answer) {
+            if (!answer) {
                 SetWrongAnswer(false);
                 SetScoreOnScreen(0);
                 return;
             }
-            await sleep(1000);
             await sleep(currentQuestion.timeoutAnswerSendDelay);
-            if (
-                answer != "timesup" &&
-                currentQuestion.correct_answer != answer
-            ) {
+            if (answer == "timesup") return;
+            if (currentQuestion.correct_answer != answer) {
                 peer.connection.send({
                     type: "playerAnswerData",
+                    answerType: "falseAnswer",
                     data: {
                         name: username,
-                        time: ((defaultTime - time) / 1000).toFixed(1),
-                        score: 0,
                         answer,
                         correct_incorrect: false,
                     },
                 });
-
-                return SetWrongAnswer(true);
+                return;
             }
-
-            if (answer == "timesup" && time == 0) {
-                peer.connection.send({
-                    type: "playerAnswerData",
-                    data: {
-                        name: username,
-                        time: null,
-                        score: 0,
-                        answer: null,
-                        correct_incorrect: false,
-                    },
-                });
-
-                return SetWrongAnswer(true);
-            }
-
-            let currentScore = Math.floor((time / defaultTime) * 1000);
-            SetScoreOnScreen(currentScore);
 
             peer.connection.send({
                 type: "playerAnswerData",
+                answerType: "correctAnswer",
                 data: {
                     name: username,
-                    time: ((defaultTime - time) / 1000).toFixed(1),
-                    score: currentScore,
                     answer,
                     correct_incorrect: true,
                 },
             });
-            return dispatch({
-                type: "INCREMENT_SCORE",
-                payload: currentScore,
-            });
+            return;
         };
 
         getAnswerResult();
     }, [choosedAnswer]);
+
+    useEffect(() => {
+        if (catchHostData?.type == "timeScoreResult") {
+            SetScoreOnScreen(catchHostData.data.score);
+            SetWrongAnswer(catchHostData.wrongAnswer);
+            SetTimeResult(catchHostData.data.time);
+            if (catchHostData.wrongAnswer && !catchHostData.data.time) {
+                dispatch({ type: "TOGGLE_SHOW_CHOOSING_ANSWER" });
+                dispatch({
+                    type: "UPDATE_CHOOSED_ANSWER_DATA",
+                    payload: {
+                        answer: "timesup",
+                    },
+                });
+            }
+            dispatch({
+                type: "INCREMENT_SCORE",
+                payload: catchHostData.data.score,
+            });
+        }
+    }, [catchHostData]);
 
     return (
         <>
@@ -92,9 +87,9 @@ const AnswerResult = () => {
                 <>
                     {show.answerResult ? (
                         <div className="relative flex flex-col items-center justify-center gap-5 h-full">
-                            {wrongAnswer && time == 0 ? (
+                            {wrongAnswer && !timeResult ? (
                                 <IncorrectAnswer timesUp={true} />
-                            ) : wrongAnswer && time != 0 ? (
+                            ) : wrongAnswer && timeResult != 0 ? (
                                 <IncorrectAnswer incorrect={true} />
                             ) : !wrongAnswer && scoreOnScreen > 0 ? (
                                 <CorrectAnswer score={scoreOnScreen} />

@@ -13,6 +13,7 @@ import { setTimeout } from "worker-timers";
 import { motivationalPhrases } from "@/Lib/motiavtionWords";
 import { praiseSentences } from "@/Lib/praiseSentences";
 import { reducer, initialState } from "../reducer/PlayerReducer";
+import { sleep } from "@/Lib/sleep";
 
 const PlayerState = createContext();
 const PlayerDispatch = createContext();
@@ -160,8 +161,10 @@ export const PlayerProvider = ({ children }) => {
         if (catchHostData?.type == "toggleThumbail") {
             return SetThumbnailBg(catchHostData.status);
         }
-        if (catchHostData?.type == "showAnswerResult")
+        if (catchHostData?.type == "showAnswerResult") {
             return dispatch({ type: "TOGGLE_SHOW_ANSWER_RESULT" });
+        }
+
         if (catchHostData?.type == "startGame") {
             dispatch({ type: "PROCEED_TO_GAME" });
             if (catchHostData?.status == "quizCountdown") {

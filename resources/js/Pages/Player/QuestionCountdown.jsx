@@ -17,8 +17,8 @@ const QuestionCountdown = () => {
         if (!showCountdownPanel.question) return;
 
         const updateTime = async () => {
-            await sleep(980);
             SetTime(DEFAULT_TIME);
+            await sleep(980);
             SetStartTime(true);
         };
 

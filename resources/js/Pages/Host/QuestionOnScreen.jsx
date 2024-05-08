@@ -18,6 +18,7 @@ const QuestionOnScreen = () => {
         questions,
         playersList,
         playersResult,
+        catchPlayerData,
         disconnectedPlayers,
         currentQuestionNumber,
         playersAnswerContainer,
@@ -28,10 +29,16 @@ const QuestionOnScreen = () => {
     const totalPlayersAnswer = useMemo(() => {
         return playersAnswerContainer.length - disconnectedPlayers.length;
     }, [playersAnswerContainer, disconnectedPlayers]);
+    const [playersListTemp, SetPlayersListTemp] = useState([]);
     const [defaultTime, SetDefaultTime] = useState(null);
     const { time, SetClearTime, SetTime, SetStartTime } =
         useTimeCountdown(null);
     const dispatch = useHostDispatch();
+
+    useEffect(() => {
+        if (show.currentQuestion) {
+        }
+    }, [playersList]);
 
     useEffect(() => {
         if (questions.length == 0) return;
@@ -49,34 +56,116 @@ const QuestionOnScreen = () => {
     }, [show.currentQuestion, defaultTime]);
 
     useEffect(() => {
-        playersList.forEach((player) => {
-            player.peerData.send({
-                type: "questionOnScreenTime",
-                data: time,
+        if (time == 0) {
+            let playerAnswerData = {
+                time: null,
+                score: 0,
+                answer: null,
+                correct_incorrect: false,
+            };
+            const filteredPlayer = playersList.filter((obj1) => {
+                let foundMatch = false;
+                for (const obj2 of playersAnswerContainer) {
+                    if (obj1.name === obj2.name) {
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                return !foundMatch;
             });
-        });
+            let arrayOfAnswers = [...playersAnswerContainer];
+            for (let index = 0; index < filteredPlayer.length; index++) {
+                setTimeout(() => {
+                    filteredPlayer[index].peerData.send({
+                        type: "timeScoreResult",
+                        wrongAnswer: true,
+                        data: {
+                            time: playerAnswerData.time,
+                            score: playerAnswerData.score,
+                        },
+                    });
+                }, 40);
+                let payload = {
+                    ...playerAnswerData,
+                    name: filteredPlayer[index].name,
+                    peerData: filteredPlayer[index].peerData,
+                };
+                arrayOfAnswers.push(payload);
+            }
+
+            dispatch({
+                type: "COLLECT_PLAYERS_ANSWER",
+                payload: arrayOfAnswers,
+            });
+        }
     }, [time]);
 
     useEffect(() => {
         if (show.answerGraph) return;
-        if (
-            playersAnswerContainer.length == playersList.length &&
-            show.currentQuestion
-        ) {
-            SetClearTime(true);
-            dispatch({ type: "TOGGLE_SHOW_ANSWER_GRAPH" });
-
-            for (let index = 0; index < playersList.length; index++) {
-                setTimeout(() => {
-                    playersList[index].peerData.send({
-                        type: "showAnswerResult",
-                    });
-                }, 25);
+        const update = async () => {
+            if (
+                playersAnswerContainer.length == playersList.length &&
+                show.currentQuestion
+            ) {
+                SetClearTime(true);
+                dispatch({ type: "TOGGLE_SHOW_ANSWER_GRAPH" });
+                await sleep(900);
+                for (let index = 0; index < playersList.length; index++) {
+                    setTimeout(() => {
+                        playersList[index].peerData.send({
+                            type: "showAnswerResult",
+                        });
+                    }, 45);
+                }
             }
-        }
+        };
+        update();
+        return;
     }, [playersList, playersAnswerContainer, show.currentQuestion]);
 
-    const handleProceedToScoreboard = () => {
+    useEffect(() => {
+        if (catchPlayerData?.type == "playerAnswerData") {
+            let playerAnswerData = catchPlayerData?.data;
+            if (catchPlayerData?.answerType == "correctAnswer") {
+                playerAnswerData.time = ((defaultTime - time) / 1000).toFixed(
+                    1
+                );
+                playerAnswerData.score = Math.floor(
+                    (time / defaultTime) * 1000
+                );
+            }
+            if (catchPlayerData?.answerType == "falseAnswer") {
+                playerAnswerData.time = ((defaultTime - time) / 1000).toFixed(
+                    1
+                );
+                playerAnswerData.score = 0;
+            }
+
+            catchPlayerData.peerData.send({
+                type: "timeScoreResult",
+                wrongAnswer:
+                    catchPlayerData?.answerType == "correctAnswer"
+                        ? false
+                        : true,
+                data: {
+                    time: playerAnswerData.time,
+                    score: playerAnswerData.score,
+                },
+            });
+            return dispatch({
+                type: "COLLECT_PLAYERS_ANSWER",
+                payload: [
+                    ...playersAnswerContainer,
+                    {
+                        ...playerAnswerData,
+                        peerData: catchPlayerData.peerData,
+                    },
+                ],
+            });
+        }
+    }, [catchPlayerData]);
+
+    const handleProceedToScoreboard = async () => {
         dispatch({ type: "TOGGLE_SHOW_CURRENT_QUESTION" });
         SetStartTime(false);
         dispatch({ type: "TOGGLE_SHOW_ANSWER_GRAPH" });
@@ -96,6 +185,13 @@ const QuestionOnScreen = () => {
                 return b.totalScore - a.totalScore;
             });
 
+            playersList.forEach((player) => {
+                player.peerData.send({
+                    type: "showFinalPanel",
+                });
+            });
+
+            await sleep(900);
             dispatch({ type: "UPDATE_PLAYERS_LIST", payload: result });
             dispatch({ type: "TOGGLE_SHOW_FINAL_RESULT" });
 
@@ -107,11 +203,7 @@ const QuestionOnScreen = () => {
                 type: "UPDATE_PLAYERS_RESULT_DATA",
                 payload: [...playersResult, answerContainerCopy],
             });
-            return playersList.forEach((player) => {
-                player.peerData.send({
-                    type: "showFinalPanel",
-                });
-            });
+            return;
         }
         return dispatch({ type: "TOGGLE_SHOW_SCOREBOARD" });
     };

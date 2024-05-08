@@ -30,10 +30,10 @@ const EnteredPlayer = () => {
                                     }
                                 />
                             </div>
-                            <h1 className="text-white font-bold text-3xl my-4 [text-shadow:0px_3px_4px_#000000]">
+                            <h1 className="text-white font-bold text-3xl my-4 [text-shadow:0px_3px_4px_#000000] text-center">
                                 {username}
                             </h1>
-                            <p className="font-semibold text-white text-xl">
+                            <p className="font-semibold text-white sm:text-xl text-lg text-center">
                                 You're in! See your nickname on screen?
                             </p>
                         </div>

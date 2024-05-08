@@ -216,7 +216,7 @@ const FinalResult = () => {
                                 <Spinner classname={"h-5 ms-2"} />
                             ) : null}
                         </motion.button>
-                        <div className="mb-5 font-semibold text-xl flex justify-center items-center">
+                        <div className="scaleIn mb-5 font-semibold text-xl flex justify-center items-center">
                             <p className=" bg-white w-fit h-fit py-2  text-center w-full ">
                                 {quizDetail.quiz_title}
                             </p>
