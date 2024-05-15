@@ -25,7 +25,7 @@ Thank you 🤞.
 
 ## Demo
 
-https://yahoot.serv00.net/
+https://yahootgame.c1.is
 
 ## Environment Variables
 
