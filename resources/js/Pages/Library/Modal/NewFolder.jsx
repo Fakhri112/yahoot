@@ -31,7 +31,7 @@ export const NewFolder = () => {
         };
         SetSubmitting(true);
         axios
-            .post("/user/library/new-folder/", payload)
+            .post("/user/library/new-folder", payload)
             .then(function (response) {
                 SetSubmitting(false);
                 handleClose();

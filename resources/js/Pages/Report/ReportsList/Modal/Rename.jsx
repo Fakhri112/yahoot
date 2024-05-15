@@ -53,7 +53,7 @@ const Rename = () => {
             id: rename.id,
         };
         SetSubmitting(true);
-        let url = `/user/reports/rename/`;
+        let url = `/user/reports/rename`;
         axios
             .patch(url, payload)
             .then(function (response) {

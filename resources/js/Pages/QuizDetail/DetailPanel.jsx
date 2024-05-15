@@ -54,7 +54,7 @@ export const DetailPanel = ({ quiz, user, favorite }) => {
                     >
                         Start
                     </a>
-                    {user.id == quiz.user_id ? (
+                    {currentUser.id == quiz.user_id ? (
                         <Link
                             href={"/edit/" + quiz.id}
                             className="btn-secondary w-full py-1 my-2 text-center"
@@ -68,7 +68,7 @@ export const DetailPanel = ({ quiz, user, favorite }) => {
                 </div>
                 <div className="flex gap-x-3 items-center py-2">
                     <ProfilePicture
-                        profilePic={user.profile_pic ?? null}
+                        profilePic={user.profile_pic ? user.profilePic : null}
                         className="h-10"
                     />
                     <Link

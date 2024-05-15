@@ -58,7 +58,7 @@ export const Rename = () => {
             id: rename.id,
         };
         SetSubmitting(true);
-        let url = `/user/library/rename/`;
+        let url = `/user/library/rename`;
         axios
             .patch(url, payload)
             .then(function (response) {

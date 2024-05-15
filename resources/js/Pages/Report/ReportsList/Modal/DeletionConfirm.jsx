@@ -34,7 +34,7 @@ const DeletionConfirm = () => {
     const handleDeletion = () => {
         SetSubmitting(true);
 
-        let url = `/user/reports/delete/`;
+        let url = `/user/reports/delete`;
         axios
             .put(url, { selectedQuizReports })
             .then(async function (response) {

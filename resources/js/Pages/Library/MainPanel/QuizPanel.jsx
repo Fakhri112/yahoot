@@ -115,7 +115,7 @@ export const QuizPanel = () => {
     };
 
     const handleRemoveFavorite = async (e) => {
-        let response = await axios.delete("/favorites/" + e.target.id);
+        let response = await axios.delete("/favorites" + e.target.id);
         toast.success(response.data.message);
         return dispatch({
             type: "RELOAD_QUIZZES_DATA",

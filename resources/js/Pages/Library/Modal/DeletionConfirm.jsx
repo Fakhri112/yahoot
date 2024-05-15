@@ -51,7 +51,7 @@ const DeletionConfirm = () => {
         }
         if (selectedFolder != "") payload.selectedFolder = selectedFolder;
 
-        let url = `/user/library/delete/`;
+        let url = `/user/library/delete`;
         axios
             .put(url, payload)
             .then(async function (response) {
