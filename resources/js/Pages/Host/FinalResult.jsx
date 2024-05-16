@@ -93,6 +93,7 @@ const FinalResult = () => {
         if (saveLoading) return;
         SetSaveLoading(true);
         axios.post("/play/submit-players-data", data).then((res) => {
+            sessionStorage.setItem("submitted", "1");
             window.location.href = "/user/" + id;
         });
     }, [data]);

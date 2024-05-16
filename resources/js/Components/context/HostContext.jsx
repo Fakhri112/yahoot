@@ -53,7 +53,8 @@ export const HostProvider = ({ children, quiz, questions }) => {
         peer.on("open", function (id) {
             window.addEventListener("beforeunload", function (event) {
                 peer.destroy();
-                axios.delete("/play/delete-pin/" + gamePin);
+                if (!sessionStorage.getItem("submitted"))
+                    axios.delete("/play/delete-pin/" + gamePin);
                 return;
             });
         });

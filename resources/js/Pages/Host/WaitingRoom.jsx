@@ -87,7 +87,8 @@ const WaitingRoom = ({ pin, questions }) => {
     };
 
     window.addEventListener("beforeunload", function (event) {
-        axios.delete("/play/delete-pin/" + pin);
+        if (!sessionStorage.getItem("submitted"))
+            axios.delete("/play/delete-pin/" + pin);
         return;
     });
 
