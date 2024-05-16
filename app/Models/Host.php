@@ -13,7 +13,7 @@ class Host extends Model
         'quiz_detail_id'
     ];
     protected $primaryKey = 'game_pin';
-
+    public $incrementing = false;
     public static function boot()
     {
         parent::boot();
