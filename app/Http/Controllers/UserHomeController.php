@@ -26,18 +26,15 @@ class UserHomeController extends Controller
                 // ABSTRAKSI INI WEH MASAK REDUNDAN
 
         $quizzes = DB::table('quiz_details');
-        $totalQuizzes = DB::table('quiz_details');
-        $totalPlayersAllQuiz = DB::table('quiz_details');
-        $totalPlaysAllQuiz = DB::table('quiz_details');
 
         if ($id == auth()->user()->id) {
-            $totalQuizzes = $totalQuizzes->where('user_id', auth()->user()->id)->count();
-            $totalPlayersAllQuiz =  $totalPlayersAllQuiz->where('user_id', auth()->user()->id)->sum('total_players');
-            $totalPlaysAllQuiz = $totalPlaysAllQuiz->where('user_id', auth()->user()->id)->sum('total_plays');
+            $totalQuizzes = $quizzes->where('user_id', auth()->user()->id)->count();
+            $totalPlayersAllQuiz =  $quizzes->where('user_id', auth()->user()->id)->sum('total_players');
+            $totalPlaysAllQuiz = $quizzes->where('user_id', auth()->user()->id)->sum('total_plays');
         } else {
-            $totalQuizzes = $totalQuizzes->where('user_id', $id)->count();
-            $totalPlayersAllQuiz =  $totalPlayersAllQuiz->where('user_id', $id)->sum('total_players');
-            $totalPlaysAllQuiz = $totalPlaysAllQuiz->where('user_id', $id)->sum('total_plays');
+            $totalQuizzes = $quizzes->where('user_id', $id)->where('visibility', 'public')->count();
+            $totalPlayersAllQuiz =  $quizzes->where('user_id', $id)->where('visibility', 'public')->sum('total_players');
+            $totalPlaysAllQuiz = $quizzes->where('user_id', $id)->where('visibility', 'public')->sum('total_plays');
         }
 
         $user = User::find($id);
@@ -60,7 +57,9 @@ class UserHomeController extends Controller
                 ->where('user_id', $id)
                 ->orderBy('updated_at', 'desc')
                 ->offset($offset)
-                ->limit($limit);    
+                ->limit($limit); 
+                
+            if ($id != auth()->user()->id) $quizzes = $quizzes->where('visibility', 'public');
           
             $queryResult = $quizzes->get();
             return $queryResult;
