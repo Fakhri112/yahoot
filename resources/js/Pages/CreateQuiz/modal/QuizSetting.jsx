@@ -83,7 +83,7 @@ export const QuizSetting = () => {
             shouldCloseOnOverlayClick={true}
             appElement={document.getElementById("app")}
             onRequestClose={handleModal().toggleSetting}
-            className="rounded bg-white md:w-[80%] w-[90%] flex flex-col min-w-[320px] h-[92%] p-3"
+            className="rounded bg-white md:w-[80%] w-[90%] flex flex-col min-w-[320px] h-[92%] md:h-auto p-3"
             overlayClassName="fixed inset-0 bg-slate-900 bg-opacity-30 z-[60] flex items-center justify-center"
         >
             <p className="text-3xl font-bold mb-2">Quiz Setting</p>

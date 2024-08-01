@@ -79,7 +79,7 @@ export const CreateQuizProvider = ({
                 <Toaster />
                 <div
                     className="h-screen flex flex-col
-                md:grid md:grid-rows-[repeat(8,_minmax(0,_1fr))]
+                md:grid 
                 md:grid-cols-[minmax(0,_1fr)_minmax(80px,_120px)_repeat(10,_minmax(0,_1fr))]"
                 >
                     {children}
